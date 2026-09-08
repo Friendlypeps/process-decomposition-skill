@@ -1,0 +1,1170 @@
+{
+  "run": {
+    "target_product": "adipic acid",
+    "granularity_note": "Diagram block 8 ('crystallization and centrifugation steps') is split into two unit operations. Blocks 11 and 12 are utility equipment and carry service='utility'.",
+    "vocabulary": "vocab/unit-operations.default.ttl",
+    "note": "Read from the process diagram only. The figure carries no temperatures, pressures, flow rates or phases, so no operating envelope could be built; see 'unresolved'."
+  },
+  "sources": [
+    {
+      "source_id": "S1",
+      "uri": "https://example.org/adipic-acid-figure-2",
+      "title": "Figure 2. Production of adipic acid from cyclohexane",
+      "kind": "figure",
+      "retrieved_at": "2026-09-08T16:20:00Z",
+      "readable": true
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "P-1",
+      "order": 1,
+      "diagram_ref": "1",
+      "label": "Air oxidation of cyclohexane in the oxidizers",
+      "kind": "UNIT_PROCESS",
+      "kind_basis": "Cyclohexane is converted to cyclohexyl hydroperoxide and KA oil components; new compounds are formed.",
+      "service": "process",
+      "capability_uri": "http://example.org/unitop#Oxidation",
+      "capability_match": "exact",
+      "equipment_as_stated": "oxidizers",
+      "inputs": [
+        "cyclohexane",
+        "recovered boric acid"
+      ],
+      "outputs": [
+        "oxidate",
+        "off-gas"
+      ],
+      "conditions": {
+        "temperature": null,
+        "pressure": null,
+        "catalyst": null
+      },
+      "reaction": null,
+      "hybrid_group": null,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "block 1, legend 'Oxidizers', fed by the cyclohexane line",
+          "offset": -1,
+          "note": "read from the figure legend"
+        }
+      ],
+      "confidence": "high",
+      "open_questions": [],
+      "notes": "",
+      "capability_basis": "The legend names the block 'Oxidizers'; the duty is an oxidation."
+    },
+    {
+      "step_id": "O-2",
+      "order": 2,
+      "diagram_ref": "2",
+      "label": "Phase separation of the oxidate in the decanter",
+      "kind": "UNIT_OPERATION",
+      "kind_basis": "Two liquid phases are separated by density; no species is converted.",
+      "service": "process",
+      "capability_uri": "http://example.org/unitop#MechanicalSeparation",
+      "capability_match": "broader",
+      "equipment_as_stated": "decanter",
+      "inputs": [
+        "oxidate"
+      ],
+      "outputs": [
+        "organic phase",
+        "aqueous boric acid phase"
+      ],
+      "conditions": {
+        "temperature": null,
+        "pressure": null,
+        "catalyst": null
+      },
+      "reaction": null,
+      "hybrid_group": null,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "block 2, legend 'Decanter'",
+          "offset": -1,
+          "note": ""
+        }
+      ],
+      "confidence": "high",
+      "open_questions": [],
+      "notes": "Bound to the parent concept: the scheme has no leaf for decantation.",
+      "capability_basis": "The legend names a decanter - a gravity phase split - and the scheme has no decantation leaf."
+    },
+    {
+      "step_id": "O-3",
+      "order": 3,
+      "diagram_ref": "3",
+      "label": "Boric acid recovery",
+      "kind": "UNIT_OPERATION",
+      "kind_basis": "Boric acid is concentrated and returned; the figure shows no chemical conversion.",
+      "service": "process",
+      "capability_uri": "",
+      "capability_match": "unmapped",
+      "equipment_as_stated": "boric acid recovery",
+      "inputs": [
+        "aqueous boric acid phase"
+      ],
+      "outputs": [
+        "recovered boric acid"
+      ],
+      "conditions": {
+        "temperature": null,
+        "pressure": null,
+        "catalyst": null
+      },
+      "reaction": null,
+      "hybrid_group": null,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "block 3, legend 'Boric acid recovery', with a return line to block 1",
+          "offset": -1,
+          "note": ""
+        }
+      ],
+      "confidence": "low",
+      "open_questions": [
+        "The figure names the duty but not the mechanism - evaporation, crystallisation or extraction? Cannot be determined from the diagram."
+      ],
+      "notes": ""
+    },
+    {
+      "step_id": "P-4",
+      "order": 4,
+      "diagram_ref": "4",
+      "label": "CHHP decomposition",
+      "kind": "UNIT_PROCESS",
+      "kind_basis": "Cyclohexyl hydroperoxide is decomposed to cyclohexanol and cyclohexanone; the peroxide bond is broken.",
+      "service": "process",
+      "capability_uri": "http://example.org/unitop#Reaction",
+      "capability_match": "broader",
+      "equipment_as_stated": "CHHP decomposition",
+      "inputs": [
+        "organic phase"
+      ],
+      "outputs": [
+        "crude KA oil"
+      ],
+      "conditions": {
+        "temperature": null,
+        "pressure": null,
+        "catalyst": null
+      },
+      "reaction": null,
+      "hybrid_group": null,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "block 4, legend 'CHHP decomposition'",
+          "offset": -1,
+          "note": ""
+        }
+      ],
+      "confidence": "high",
+      "open_questions": [],
+      "notes": "Bound to the parent concept: the scheme has no leaf for peroxide decomposition.",
+      "capability_basis": "Peroxide decomposition is a reaction; the scheme has no leaf for it."
+    },
+    {
+      "step_id": "O-5",
+      "order": 5,
+      "diagram_ref": "5",
+      "label": "KA oil purification",
+      "kind": "UNIT_OPERATION",
+      "kind_basis": "Cyclohexanol and cyclohexanone are separated from residue; neither is converted.",
+      "service": "process",
+      "capability_uri": "http://example.org/unitop#Separation",
+      "capability_match": "broader",
+      "equipment_as_stated": "KA oil purification",
+      "inputs": [
+        "crude KA oil"
+      ],
+      "outputs": [
+        "KA oil"
+      ],
+      "conditions": {
+        "temperature": null,
+        "pressure": null,
+        "catalyst": null
+      },
+      "reaction": null,
+      "hybrid_group": null,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "block 5, legend 'KA oil purification'",
+          "offset": -1,
+          "note": ""
+        }
+      ],
+      "confidence": "medium",
+      "open_questions": [],
+      "notes": "The figure does not say whether purification is distillative.",
+      "capability_basis": "The legend names a purification duty, which is a separation of unstated mechanism."
+    },
+    {
+      "step_id": "P-6",
+      "order": 6,
+      "diagram_ref": "6",
+      "label": "Nitric acid oxidation of KA oil in the converters",
+      "kind": "UNIT_PROCESS",
+      "kind_basis": "Cyclohexanol/cyclohexanone are oxidised to adipic acid; the carbon ring is cleaved.",
+      "service": "process",
+      "capability_uri": "http://example.org/unitop#Oxidation",
+      "capability_match": "exact",
+      "equipment_as_stated": "converters",
+      "inputs": [
+        "KA oil",
+        "nitric acid"
+      ],
+      "outputs": [
+        "crude adipic acid liquor",
+        "NOx off-gas"
+      ],
+      "conditions": {
+        "temperature": null,
+        "pressure": null,
+        "catalyst": null
+      },
+      "reaction": null,
+      "hybrid_group": null,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "block 6, legend 'Converters', fed by the nitric acid line",
+          "offset": -1,
+          "note": ""
+        }
+      ],
+      "confidence": "high",
+      "open_questions": [],
+      "notes": "",
+      "capability_basis": "The converters are fed nitric acid; the duty is an oxidation."
+    },
+    {
+      "step_id": "O-7",
+      "order": 7,
+      "diagram_ref": "7",
+      "label": "Concentration of the adipic acid liquor in the bleacher and concentration still",
+      "kind": "UNIT_OPERATION",
+      "kind_basis": "Water and dissolved gases are removed by vaporisation; adipic acid is unchanged.",
+      "service": "process",
+      "capability_uri": "http://example.org/unitop#Evaporation",
+      "capability_match": "exact",
+      "equipment_as_stated": "bleacher and concentration still",
+      "inputs": [
+        "crude adipic acid liquor"
+      ],
+      "outputs": [
+        "concentrated liquor",
+        "wastewater"
+      ],
+      "conditions": {
+        "temperature": null,
+        "pressure": null,
+        "catalyst": null
+      },
+      "reaction": null,
+      "hybrid_group": null,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "block 7, legend 'Bleacher and concentration still'",
+          "offset": -1,
+          "note": ""
+        }
+      ],
+      "confidence": "medium",
+      "open_questions": [],
+      "notes": "The bleaching duty may involve a chemical step; the figure does not say, so only the concentration duty is classified here.",
+      "capability_basis": "A concentration still removes water by vaporisation."
+    },
+    {
+      "step_id": "O-8",
+      "order": 8,
+      "diagram_ref": "8",
+      "label": "Crystallisation of adipic acid",
+      "kind": "UNIT_OPERATION",
+      "kind_basis": "Adipic acid changes phase from dissolved to solid; the compound is unchanged.",
+      "service": "process",
+      "capability_uri": "http://example.org/unitop#Crystallisation",
+      "capability_match": "exact",
+      "equipment_as_stated": "crystallization and centrifugation steps",
+      "inputs": [
+        "concentrated liquor"
+      ],
+      "outputs": [
+        "crystal slurry"
+      ],
+      "conditions": {
+        "temperature": null,
+        "pressure": null,
+        "catalyst": null
+      },
+      "reaction": null,
+      "hybrid_group": null,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "block 8, legend 'Crystallization and centrifugation steps'",
+          "offset": -1,
+          "note": "one drawn block, two unit operations"
+        }
+      ],
+      "confidence": "high",
+      "open_questions": [],
+      "notes": "",
+      "capability_basis": "The legend names crystallization explicitly."
+    },
+    {
+      "step_id": "O-9",
+      "order": 9,
+      "diagram_ref": "8",
+      "label": "Centrifugation of the crystal slurry",
+      "kind": "UNIT_OPERATION",
+      "kind_basis": "Solid crystals are separated from mother liquor by centrifugal force; nothing is converted.",
+      "service": "process",
+      "capability_uri": "http://example.org/unitop#Centrifugation",
+      "capability_match": "exact",
+      "equipment_as_stated": "crystallization and centrifugation steps",
+      "inputs": [
+        "crystal slurry"
+      ],
+      "outputs": [
+        "wet adipic acid",
+        "mother liquor"
+      ],
+      "conditions": {
+        "temperature": null,
+        "pressure": null,
+        "catalyst": null
+      },
+      "reaction": null,
+      "hybrid_group": null,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "block 8, legend 'Crystallization and centrifugation steps'",
+          "offset": -1,
+          "note": ""
+        }
+      ],
+      "confidence": "high",
+      "open_questions": [],
+      "notes": "",
+      "capability_basis": "The legend names centrifugation explicitly."
+    },
+    {
+      "step_id": "O-10",
+      "order": 10,
+      "diagram_ref": "9",
+      "label": "Rotary drying of adipic acid",
+      "kind": "UNIT_OPERATION",
+      "kind_basis": "Residual moisture is vaporised off the solid; adipic acid is unchanged.",
+      "service": "process",
+      "capability_uri": "http://example.org/unitop#Drying",
+      "capability_match": "exact",
+      "equipment_as_stated": "rotary dryer",
+      "inputs": [
+        "wet adipic acid"
+      ],
+      "outputs": [
+        "adipic acid"
+      ],
+      "conditions": {
+        "temperature": null,
+        "pressure": null,
+        "catalyst": null
+      },
+      "reaction": null,
+      "hybrid_group": null,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "block 9, legend 'Rotary dryer', discharging to the adipic acid line",
+          "offset": -1,
+          "note": ""
+        }
+      ],
+      "confidence": "high",
+      "open_questions": [],
+      "notes": "",
+      "capability_basis": "The legend names a rotary dryer."
+    },
+    {
+      "step_id": "O-11",
+      "order": 11,
+      "diagram_ref": "11",
+      "label": "Cooling water supply from the cooling tower",
+      "kind": "UNIT_OPERATION",
+      "kind_basis": "Heat is rejected from the circulating water; no species is converted.",
+      "service": "utility",
+      "capability_uri": "http://example.org/unitop#Cooling",
+      "capability_match": "exact",
+      "equipment_as_stated": "cooling tower",
+      "inputs": [],
+      "outputs": [
+        "cooling water"
+      ],
+      "conditions": {
+        "temperature": null,
+        "pressure": null,
+        "catalyst": null
+      },
+      "reaction": null,
+      "hybrid_group": null,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "block 11, legend 'Cooling tower', marked CW",
+          "offset": -1,
+          "note": ""
+        }
+      ],
+      "confidence": "high",
+      "open_questions": [],
+      "notes": "Offsite; excluded from process module sourcing by service='utility'.",
+      "capability_basis": "A cooling tower rejects heat from circulating water."
+    },
+    {
+      "step_id": "O-12",
+      "order": 12,
+      "diagram_ref": "12",
+      "label": "Steam generation in the boiler",
+      "kind": "UNIT_OPERATION",
+      "kind_basis": "Feed water is vaporised to steam; water is chemically unchanged.",
+      "service": "utility",
+      "capability_uri": "http://example.org/unitop#Heating",
+      "capability_match": "exact",
+      "equipment_as_stated": "boiler",
+      "inputs": [],
+      "outputs": [
+        "steam"
+      ],
+      "conditions": {
+        "temperature": null,
+        "pressure": null,
+        "catalyst": null
+      },
+      "reaction": null,
+      "hybrid_group": null,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "block 12, legend 'Boiler', marked ST",
+          "offset": -1,
+          "note": ""
+        }
+      ],
+      "confidence": "high",
+      "open_questions": [],
+      "notes": "Offsite; the combustion duty itself is not drawn.",
+      "capability_basis": "A boiler raises steam by heat transfer."
+    }
+  ],
+  "streams": [
+    {
+      "stream_id": "ST-1",
+      "label": "cyclohexane feed",
+      "substances": [
+        {
+          "name": "cyclohexane",
+          "identifier": "110-82-7",
+          "scheme": "CAS"
+        }
+      ],
+      "role": "Feed",
+      "from_step": "",
+      "to_step": "P-1",
+      "from_port": null,
+      "to_port": null,
+      "spec": "",
+      "origin": "boundary",
+      "confidence": 1.0,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "cyclohexane line entering block 1",
+          "offset": -1,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-2",
+      "label": "boric acid make-up",
+      "substances": [
+        {
+          "name": "boric acid",
+          "identifier": "10043-35-3",
+          "scheme": "CAS"
+        }
+      ],
+      "role": "Feed",
+      "from_step": "",
+      "to_step": "O-3",
+      "from_port": null,
+      "to_port": null,
+      "spec": "",
+      "origin": "boundary",
+      "confidence": 1.0,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "boric acid line entering block 3",
+          "offset": -1,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-3",
+      "label": "oxidate",
+      "substances": [],
+      "role": "Intermediate",
+      "from_step": "P-1",
+      "to_step": "O-2",
+      "from_port": null,
+      "to_port": null,
+      "spec": "",
+      "origin": "stated",
+      "confidence": 1.0,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "line from block 1 to block 2",
+          "offset": -1,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-4",
+      "label": "organic phase",
+      "substances": [],
+      "role": "Intermediate",
+      "from_step": "O-2",
+      "to_step": "P-4",
+      "from_port": "organic phase",
+      "to_port": null,
+      "spec": "",
+      "origin": "stated",
+      "confidence": 1.0,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "line from block 2 to block 4",
+          "offset": -1,
+          "note": "port hint distinguishes the decanter's two outlets"
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-5",
+      "label": "aqueous boric acid phase",
+      "substances": [
+        {
+          "name": "boric acid",
+          "identifier": "10043-35-3",
+          "scheme": "CAS"
+        }
+      ],
+      "role": "Intermediate",
+      "from_step": "O-2",
+      "to_step": "O-3",
+      "from_port": "aqueous phase",
+      "to_port": null,
+      "spec": "",
+      "origin": "stated",
+      "confidence": 1.0,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "line from block 2 down to block 3",
+          "offset": -1,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-6",
+      "label": "recovered boric acid recycle",
+      "substances": [
+        {
+          "name": "boric acid",
+          "identifier": "10043-35-3",
+          "scheme": "CAS"
+        }
+      ],
+      "role": "Recycle",
+      "from_step": "O-3",
+      "to_step": "P-1",
+      "from_port": null,
+      "to_port": null,
+      "spec": "",
+      "origin": "stated",
+      "confidence": 1.0,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "return line from block 3 to block 1",
+          "offset": -1,
+          "note": "closes the boric acid loop"
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-7",
+      "label": "crude KA oil",
+      "substances": [],
+      "role": "Intermediate",
+      "from_step": "P-4",
+      "to_step": "O-5",
+      "from_port": null,
+      "to_port": null,
+      "spec": "",
+      "origin": "stated",
+      "confidence": 1.0,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "line from block 4 to block 5",
+          "offset": -1,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-8",
+      "label": "KA oil",
+      "substances": [
+        {
+          "name": "cyclohexanol",
+          "identifier": "108-93-0",
+          "scheme": "CAS"
+        },
+        {
+          "name": "cyclohexanone",
+          "identifier": "108-94-1",
+          "scheme": "CAS"
+        }
+      ],
+      "role": "Intermediate",
+      "from_step": "O-5",
+      "to_step": "P-6",
+      "from_port": null,
+      "to_port": null,
+      "spec": "",
+      "origin": "stated",
+      "confidence": 1.0,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "line from block 5 to block 6",
+          "offset": -1,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-9",
+      "label": "nitric acid feed",
+      "substances": [
+        {
+          "name": "nitric acid",
+          "identifier": "7697-37-2",
+          "scheme": "CAS"
+        }
+      ],
+      "role": "Feed",
+      "from_step": "",
+      "to_step": "P-6",
+      "from_port": null,
+      "to_port": null,
+      "spec": "",
+      "origin": "boundary",
+      "confidence": 1.0,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "nitric acid line entering the converter section",
+          "offset": -1,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-10",
+      "label": "crude adipic acid liquor",
+      "substances": [],
+      "role": "Intermediate",
+      "from_step": "P-6",
+      "to_step": "O-7",
+      "from_port": null,
+      "to_port": null,
+      "spec": "",
+      "origin": "stated",
+      "confidence": 1.0,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "line from block 6 to block 7",
+          "offset": -1,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-11",
+      "label": "concentrated liquor",
+      "substances": [],
+      "role": "Intermediate",
+      "from_step": "O-7",
+      "to_step": "O-8",
+      "from_port": null,
+      "to_port": null,
+      "spec": "",
+      "origin": "inferred",
+      "confidence": 0.8,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "line descending from block 7 toward block 8",
+          "offset": -1,
+          "note": "the line passes behind a label; endpoint inferred from process order"
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-12",
+      "label": "crystal slurry",
+      "substances": [],
+      "role": "Intermediate",
+      "from_step": "O-8",
+      "to_step": "O-9",
+      "from_port": null,
+      "to_port": null,
+      "spec": "",
+      "origin": "inferred",
+      "confidence": 0.7,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "block 8 covers both operations",
+          "offset": -1,
+          "note": "internal to the drawn block; not separately drawn"
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-13",
+      "label": "wet adipic acid",
+      "substances": [],
+      "role": "Intermediate",
+      "from_step": "O-9",
+      "to_step": "O-10",
+      "from_port": null,
+      "to_port": null,
+      "spec": "",
+      "origin": "stated",
+      "confidence": 1.0,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "line from block 8 to block 9",
+          "offset": -1,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-14",
+      "label": "adipic acid product",
+      "substances": [
+        {
+          "name": "adipic acid",
+          "identifier": "124-04-9",
+          "scheme": "CAS"
+        }
+      ],
+      "role": "ProductStream",
+      "from_step": "O-10",
+      "to_step": "",
+      "from_port": null,
+      "to_port": null,
+      "spec": "",
+      "origin": "boundary",
+      "confidence": 1.0,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "adipic acid line leaving block 9",
+          "offset": -1,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-15",
+      "label": "off-gas",
+      "substances": [],
+      "role": "OffGas",
+      "from_step": "P-1",
+      "to_step": "",
+      "from_port": null,
+      "to_port": null,
+      "spec": "",
+      "origin": "boundary",
+      "confidence": 0.9,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "off-gas line leaving the top of the diagram",
+          "offset": -1,
+          "note": "the figure routes off-gas from the upper section; origin block read as 1"
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-16",
+      "label": "wastewater",
+      "substances": [],
+      "role": "Waste",
+      "from_step": "O-7",
+      "to_step": "",
+      "from_port": null,
+      "to_port": null,
+      "spec": "",
+      "origin": "boundary",
+      "confidence": 0.9,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "wastewater line leaving block 7",
+          "offset": -1,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-17",
+      "label": "AGS mixture",
+      "substances": [],
+      "role": "ByproductStream",
+      "from_step": "O-9",
+      "to_step": "",
+      "from_port": null,
+      "to_port": null,
+      "spec": "",
+      "origin": "boundary",
+      "confidence": 0.6,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "AGS mixture line leaving the lower left of the diagram",
+          "offset": -1,
+          "note": "the originating block could not be read with confidence"
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-18",
+      "label": "cooling water",
+      "substances": [
+        {
+          "name": "water",
+          "identifier": "7732-18-5",
+          "scheme": "CAS"
+        }
+      ],
+      "role": "Utility",
+      "from_step": "O-11",
+      "to_step": "",
+      "from_port": null,
+      "to_port": null,
+      "spec": "",
+      "origin": "boundary",
+      "confidence": 0.8,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "CW marker attached to block 11",
+          "offset": -1,
+          "note": "the served blocks are not individually drawn"
+        }
+      ]
+    },
+    {
+      "stream_id": "ST-19",
+      "label": "steam",
+      "substances": [
+        {
+          "name": "water",
+          "identifier": "7732-18-5",
+          "scheme": "CAS"
+        }
+      ],
+      "role": "Utility",
+      "from_step": "O-12",
+      "to_step": "",
+      "from_port": null,
+      "to_port": null,
+      "spec": "",
+      "origin": "boundary",
+      "confidence": 0.8,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "ST marker attached to block 12",
+          "offset": -1,
+          "note": "the served blocks are not individually drawn"
+        }
+      ]
+    }
+  ],
+  "requirement_specs": [
+    {
+      "step_id": "P-1",
+      "kind": "UNIT_PROCESS",
+      "capability_uri": "http://example.org/unitop#Oxidation",
+      "not_stated": [
+        "temperature",
+        "pressure",
+        "volume",
+        "throughput"
+      ],
+      "phase": "",
+      "substances": [
+        {
+          "name": "cyclohexane",
+          "identifier": "110-82-7",
+          "scheme": "CAS"
+        }
+      ],
+      "materials_required": [],
+      "safety_classes": []
+    },
+    {
+      "step_id": "O-2",
+      "kind": "UNIT_OPERATION",
+      "capability_uri": "http://example.org/unitop#MechanicalSeparation",
+      "not_stated": [
+        "temperature",
+        "pressure",
+        "volume",
+        "throughput"
+      ],
+      "phase": "",
+      "substances": [],
+      "materials_required": [],
+      "safety_classes": []
+    },
+    {
+      "step_id": "O-3",
+      "kind": "UNIT_OPERATION",
+      "capability_uri": "",
+      "not_stated": [
+        "temperature",
+        "pressure",
+        "volume",
+        "throughput"
+      ],
+      "phase": "",
+      "substances": [],
+      "materials_required": [],
+      "safety_classes": []
+    },
+    {
+      "step_id": "P-4",
+      "kind": "UNIT_PROCESS",
+      "capability_uri": "http://example.org/unitop#Reaction",
+      "not_stated": [
+        "temperature",
+        "pressure",
+        "volume",
+        "throughput"
+      ],
+      "phase": "",
+      "substances": [],
+      "materials_required": [],
+      "safety_classes": []
+    },
+    {
+      "step_id": "O-5",
+      "kind": "UNIT_OPERATION",
+      "capability_uri": "http://example.org/unitop#Separation",
+      "not_stated": [
+        "temperature",
+        "pressure",
+        "volume",
+        "throughput"
+      ],
+      "phase": "",
+      "substances": [],
+      "materials_required": [],
+      "safety_classes": []
+    },
+    {
+      "step_id": "P-6",
+      "kind": "UNIT_PROCESS",
+      "capability_uri": "http://example.org/unitop#Oxidation",
+      "not_stated": [
+        "temperature",
+        "pressure",
+        "volume",
+        "throughput"
+      ],
+      "phase": "",
+      "substances": [
+        {
+          "name": "nitric acid",
+          "identifier": "7697-37-2",
+          "scheme": "CAS"
+        },
+        {
+          "name": "cyclohexanol",
+          "identifier": "108-93-0",
+          "scheme": "CAS"
+        }
+      ],
+      "materials_required": [],
+      "safety_classes": []
+    },
+    {
+      "step_id": "O-7",
+      "kind": "UNIT_OPERATION",
+      "capability_uri": "http://example.org/unitop#Evaporation",
+      "not_stated": [
+        "temperature",
+        "pressure",
+        "volume",
+        "throughput"
+      ],
+      "phase": "",
+      "substances": [],
+      "materials_required": [],
+      "safety_classes": []
+    },
+    {
+      "step_id": "O-8",
+      "kind": "UNIT_OPERATION",
+      "capability_uri": "http://example.org/unitop#Crystallisation",
+      "not_stated": [
+        "temperature",
+        "pressure",
+        "volume",
+        "throughput"
+      ],
+      "phase": "",
+      "substances": [
+        {
+          "name": "adipic acid",
+          "identifier": "124-04-9",
+          "scheme": "CAS"
+        }
+      ],
+      "materials_required": [],
+      "safety_classes": []
+    },
+    {
+      "step_id": "O-9",
+      "kind": "UNIT_OPERATION",
+      "capability_uri": "http://example.org/unitop#Centrifugation",
+      "not_stated": [
+        "temperature",
+        "pressure",
+        "volume",
+        "throughput"
+      ],
+      "phase": "",
+      "substances": [],
+      "materials_required": [],
+      "safety_classes": []
+    },
+    {
+      "step_id": "O-10",
+      "kind": "UNIT_OPERATION",
+      "capability_uri": "http://example.org/unitop#Drying",
+      "not_stated": [
+        "temperature",
+        "pressure",
+        "volume",
+        "throughput"
+      ],
+      "phase": "",
+      "substances": [
+        {
+          "name": "adipic acid",
+          "identifier": "124-04-9",
+          "scheme": "CAS"
+        }
+      ],
+      "materials_required": [],
+      "safety_classes": []
+    },
+    {
+      "step_id": "O-11",
+      "kind": "UNIT_OPERATION",
+      "capability_uri": "http://example.org/unitop#Cooling",
+      "not_stated": [
+        "temperature",
+        "pressure",
+        "volume",
+        "throughput"
+      ],
+      "phase": "",
+      "substances": [],
+      "materials_required": [],
+      "safety_classes": []
+    },
+    {
+      "step_id": "O-12",
+      "kind": "UNIT_OPERATION",
+      "capability_uri": "http://example.org/unitop#Heating",
+      "not_stated": [
+        "temperature",
+        "pressure",
+        "volume",
+        "throughput"
+      ],
+      "phase": "",
+      "substances": [],
+      "materials_required": [],
+      "safety_classes": []
+    }
+  ],
+  "hybrids": [],
+  "vocabulary_gaps": [
+    {
+      "step_id": "O-3",
+      "described_as": "boric acid recovery",
+      "nearest_concept": "http://example.org/unitop#Separation",
+      "why_not": "The figure names a duty, not a mechanism. Binding to a separation concept would assert a mechanism the source does not state."
+    }
+  ],
+  "unresolved": [
+    {
+      "kind": "operating_envelope",
+      "applies_to": "all steps",
+      "detail": "The figure carries no temperature, pressure, flow rate or phase. No range was emitted for any step; module matching on this input can only return INSUFFICIENT_DATA until the accompanying text is supplied."
+    },
+    {
+      "kind": "materials_of_construction",
+      "applies_to": "P-6",
+      "detail": "Nitric acid service implies a corrosion-resistant alloy, but the figure states no material. Left empty rather than inferred; filling it needs a citable source."
+    },
+    {
+      "kind": "topology",
+      "applies_to": "ST-17",
+      "detail": "The AGS mixture line could not be traced to its originating block with confidence; from_step O-9 is a reading, not a certainty."
+    },
+    {
+      "kind": "topology",
+      "applies_to": "blocks 10",
+      "detail": "Purge treatment (block 10) is drawn but its inlet and outlet lines could not be followed; the step is omitted rather than connected by guess."
+    }
+  ]
+}

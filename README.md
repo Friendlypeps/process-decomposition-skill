@@ -8,21 +8,28 @@ Built to be mounted by [TrueForge](https://github.com/truefoundry/trueforge) as 
 git skill, and to be portable into other agent runtimes afterwards.
 
 ```
-skills/process-decomposition/
-├── SKILL.md                          the instructions the agent reads
+skills/process-decomposition/          ← the only path mounted into the sandbox
+├── SKILL.md                           the instructions the agent reads
 ├── reference/
-│   ├── classification.md             the unit operation / unit process rubric and its edge cases
-│   ├── flowsheet.md                  reading topology off a diagram: roles, origins, ports, utilities
-│   ├── gap-filling.md                delegating the envelope search to sub-agents, and merging it back
-│   ├── operating-envelope.md         SI ranges, unknown vs unbounded, the cited-source rule
-│   ├── output-schema.md              JSON and Turtle shapes
-│   └── vocabulary.md                 how to bind a step to a concept
-├── vocab/unit-operations.default.ttl a standalone SKOS scheme (replaceable)
-├── examples/
-│   ├── adipic-acid.json              prose decomposition, steps only
-│   └── adipic-acid-flowsheet.json    diagram decomposition with topology and specs
-└── scripts/validate_decomposition.py dependency-free output validator
+│   ├── classification.md              the unit operation / unit process rubric and its edge cases
+│   ├── flowsheet.md                   reading topology off a diagram: roles, origins, ports, utilities
+│   ├── gap-filling.md                 delegating the envelope search to sub-agents, and merging it back
+│   ├── operating-envelope.md          SI ranges, unknown vs unbounded, the cited-source rule
+│   ├── output-schema.md               JSON and Turtle shapes
+│   └── vocabulary.md                  how to bind a step to a concept
+├── vocab/unit-operations.default.ttl  a standalone SKOS scheme (replaceable)
+└── scripts/validate_decomposition.py  dependency-free output validator
+
+examples/                              deliberately OUTSIDE the mounted path
+├── adipic-acid.json                   prose decomposition
+└── adipic-acid-flowsheet.json         diagram decomposition with topology and specs
 ```
+
+Examples live at the repo root on purpose. They were briefly inside the skill, and
+an agent asked to decompose adipic acid found a finished adipic acid
+decomposition in its own sandbox and mirrored it instead of reading the source.
+A worked example of the process a user is likely to analyse is not documentation
+in that position — it is an answer key. Keep them out of the mounted path.
 
 ## What it is for
 

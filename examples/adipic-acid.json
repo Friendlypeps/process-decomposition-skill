@@ -9,7 +9,9 @@
       "source_id": "S1",
       "uri": "https://example.org/adipic-acid-process",
       "title": "Adipic acid via KA oil oxidation",
-      "retrieved_at": "2026-09-08T09:12:00Z"
+      "retrieved_at": "2026-09-08T09:12:00Z",
+      "kind": "web",
+      "readable": true
     }
   ],
   "steps": [
@@ -22,9 +24,18 @@
       "capability_uri": "http://example.org/unitop#Blending",
       "capability_match": "exact",
       "equipment_as_stated": "mixing vessel",
-      "inputs": ["KA oil", "recycled Cu/V catalyst solution"],
-      "outputs": ["reactor feed"],
-      "conditions": { "temperature": null, "pressure": null, "catalyst": null },
+      "inputs": [
+        "KA oil",
+        "recycled Cu/V catalyst solution"
+      ],
+      "outputs": [
+        "reactor feed"
+      ],
+      "conditions": {
+        "temperature": null,
+        "pressure": null,
+        "catalyst": null
+      },
       "reaction": null,
       "hybrid_group": null,
       "evidence": [
@@ -37,7 +48,8 @@
       ],
       "confidence": "medium",
       "open_questions": [],
-      "notes": "Mixing is stated but no conditions are given."
+      "notes": "Mixing is stated but no conditions are given.",
+      "capability_basis": "The source describes combining two streams in a mixing vessel."
     },
     {
       "step_id": "P-2",
@@ -48,10 +60,23 @@
       "capability_uri": "http://example.org/unitop#Oxidation",
       "capability_match": "exact",
       "equipment_as_stated": "stirred tank reactor cascade",
-      "inputs": ["reactor feed", "60% nitric acid"],
-      "outputs": ["crude adipic acid solution", "NOx off-gas"],
-      "conditions": { "temperature": "60-80 C", "pressure": null, "catalyst": "Cu(II)/NH4VO3" },
-      "reaction": { "equation": "C6H12O + HNO3 -> C6H10O4 + N2O + H2O", "balanced": false },
+      "inputs": [
+        "reactor feed",
+        "60% nitric acid"
+      ],
+      "outputs": [
+        "crude adipic acid solution",
+        "NOx off-gas"
+      ],
+      "conditions": {
+        "temperature": "60-80 C",
+        "pressure": null,
+        "catalyst": "Cu(II)/NH4VO3"
+      },
+      "reaction": {
+        "equation": "C6H12O + HNO3 -> C6H10O4 + N2O + H2O",
+        "balanced": false
+      },
       "hybrid_group": null,
       "evidence": [
         {
@@ -63,7 +88,8 @@
       ],
       "confidence": "high",
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "capability_basis": "The source names oxidation with nitric acid."
     },
     {
       "step_id": "O-3",
@@ -74,9 +100,18 @@
       "capability_uri": "http://example.org/unitop#Crystallisation",
       "capability_match": "exact",
       "equipment_as_stated": "cooling crystalliser",
-      "inputs": ["crude adipic acid solution"],
-      "outputs": ["adipic acid crystals", "mother liquor"],
-      "conditions": { "temperature": "cooled to ambient", "pressure": null, "catalyst": null },
+      "inputs": [
+        "crude adipic acid solution"
+      ],
+      "outputs": [
+        "adipic acid crystals",
+        "mother liquor"
+      ],
+      "conditions": {
+        "temperature": "cooled to ambient",
+        "pressure": null,
+        "catalyst": null
+      },
       "reaction": null,
       "hybrid_group": null,
       "evidence": [
@@ -89,7 +124,8 @@
       ],
       "confidence": "high",
       "open_questions": [],
-      "notes": ""
+      "notes": "",
+      "capability_basis": "The source describes cooling until the product crystallises out."
     },
     {
       "step_id": "O-4",
@@ -100,9 +136,18 @@
       "capability_uri": "",
       "capability_match": "unmapped",
       "equipment_as_stated": "sweating column",
-      "inputs": ["mother liquor"],
-      "outputs": ["recovered acid", "residue"],
-      "conditions": { "temperature": null, "pressure": null, "catalyst": null },
+      "inputs": [
+        "mother liquor"
+      ],
+      "outputs": [
+        "recovered acid",
+        "residue"
+      ],
+      "conditions": {
+        "temperature": null,
+        "pressure": null,
+        "catalyst": null
+      },
       "reaction": null,
       "hybrid_group": null,
       "evidence": [
@@ -127,6 +172,75 @@
       "described_as": "melt crystallisation with sweating",
       "nearest_concept": "http://example.org/unitop#Crystallisation",
       "why_not": "The scheme has no concept for melt crystallisation, and the sweating purification stage is not representable."
+    }
+  ],
+  "requirement_specs": [
+    {
+      "step_id": "O-1",
+      "kind": "UNIT_OPERATION",
+      "capability_uri": "http://example.org/unitop#Blending",
+      "not_stated": [
+        "temperature",
+        "pressure",
+        "volume",
+        "throughput"
+      ],
+      "phase": "",
+      "substances": [],
+      "materials_required": [],
+      "safety_classes": []
+    },
+    {
+      "step_id": "P-2",
+      "kind": "UNIT_PROCESS",
+      "capability_uri": "http://example.org/unitop#Oxidation",
+      "not_stated": [
+        "temperature",
+        "pressure",
+        "volume",
+        "throughput"
+      ],
+      "phase": "",
+      "substances": [],
+      "materials_required": [],
+      "safety_classes": []
+    },
+    {
+      "step_id": "O-3",
+      "kind": "UNIT_OPERATION",
+      "capability_uri": "http://example.org/unitop#Crystallisation",
+      "not_stated": [
+        "temperature",
+        "pressure",
+        "volume",
+        "throughput"
+      ],
+      "phase": "",
+      "substances": [],
+      "materials_required": [],
+      "safety_classes": []
+    },
+    {
+      "step_id": "O-4",
+      "kind": "UNIT_OPERATION",
+      "capability_uri": "",
+      "not_stated": [
+        "temperature",
+        "pressure",
+        "volume",
+        "throughput"
+      ],
+      "phase": "",
+      "substances": [],
+      "materials_required": [],
+      "safety_classes": []
+    }
+  ],
+  "unresolved": [
+    {
+      "kind": "operating_envelope",
+      "applies_to": "all steps",
+      "detail": "The source states no temperature, pressure, volume or throughput. Every step's envelope is empty and module matching can only return INSUFFICIENT_DATA until a cited source is found."
     }
   ]
 }

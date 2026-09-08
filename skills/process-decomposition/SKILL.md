@@ -48,6 +48,22 @@ not read from the source** — do not supply it from what you know about the
 chemistry. `reference/operating-envelope.md` gives the only route by which a
 missing value may be filled, and it requires a citation.
 
+## Fetch before you claim
+
+Open a page by navigating to it. Do not reach a page by evaluating script in
+whatever document happens to be loaded — that reads an empty tab as easily as an
+article, and gives no signal which one you got.
+
+Record what you actually read: each source's URI, the time you fetched it, and
+how much text came back. A fetch that failed — a 403, a download that would not
+resolve, an image you could not open — is recorded as `readable: false`.
+
+**A source you could not fetch cannot support a claim.** No evidence may cite it
+and no step may rest on it. If you could not read the source at all, say so and
+emit nothing. A decomposition assembled from what you already know about the
+chemistry is worse than no decomposition, because it is indistinguishable from
+one that was read.
+
 ## How to work
 
 1. **Read the whole source first.** Do not classify while reading. Process
@@ -63,14 +79,18 @@ missing value may be filled, and it requires a citation.
    ion exchange, calcination, absorption vs chemisorption. Consult it whenever a
    step is not obviously one or the other; those cases are where decompositions
    go wrong.
-5. **Bind each step to a vocabulary concept.** See `reference/vocabulary.md`.
-   When no concept fits, leave `capability_uri` empty, set
-   `capability_match: "unmapped"`, and add a `vocabulary_gaps` entry.
+5. **Bind each step to a vocabulary concept**, and say why in `capability_basis`
+   — one sentence naming the duty or equipment the source gives. See
+   `reference/vocabulary.md`. When no concept fits, leave `capability_uri` empty,
+   set `capability_match: "unmapped"`, and add a `vocabulary_gaps` entry.
    **Never invent a concept URI** — a fabricated URI looks authoritative and is
    wrong.
-6. **Build the operating envelopes.** Load `reference/operating-envelope.md`.
-   SI-normalise every range; omit unknown quantities entirely rather than
-   emitting open-ended ones. When gaps remain and sub-agents are available,
+6. **Build the operating envelopes — one `requirement_specs` entry per step, with
+   no exceptions.** Load `reference/operating-envelope.md`. Every quantity is
+   either a range or named in `not_stated`; a step whose envelope is entirely
+   unknown still gets a spec saying so. SI-normalise every range and omit unknown
+   quantities rather than emitting open-ended ones. When gaps remain and
+   sub-agents are available,
    load `reference/gap-filling.md` and delegate the search — one sub-agent per
    step, after the decomposition validates, never before.
 7. **Quote your evidence.** Every step and every stream needs at least one
@@ -91,6 +111,8 @@ missing value may be filled, and it requires a citation.
   Unstated is omitted, not a typical value.
 - Do not emit a range that is open on both sides to represent an unknown. That
   means "anything qualifies" and matches every candidate module.
+- Do not report "unresolved: none" while quantities sit in `not_stated`. Absence
+  found is a result to report, not an absence of results.
 - Do not straighten out a recycle. The flowsheet is a directed graph with cycles.
 - Do not renumber or reorder steps to look tidier than the source supports. If the
   order is not stated, set `order: null` and note it.

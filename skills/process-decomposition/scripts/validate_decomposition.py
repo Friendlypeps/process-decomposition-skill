@@ -2,6 +2,11 @@
 """
 Check a decomposition JSON file against the rules in reference/output-schema.md.
 
+The checks that matter most are about *absence*, not shape. A decomposition that
+quietly omits its operating envelopes and reports nothing unresolved looks clean
+to any validator that only inspects what is present, so this one requires every
+step to account for every quantity explicitly.
+
 Dependency-free on purpose: this runs inside whatever sandbox the agent was given,
 and a validator that needs installing is a validator that gets skipped. The
 vocabulary is parsed with a regex rather than an RDF library for the same reason -
@@ -64,7 +69,7 @@ class Report:
         self.warnings.append(f"WARN   {where}: {message}")
 
 
-def check_evidence(items: list, where: str, source_ids: set[str], report: Report,
+def check_evidence(items: list, where: str, sources: dict, report: Report,
                    *, required: bool = True) -> None:
     if not items:
         if required:
@@ -75,11 +80,21 @@ def check_evidence(items: list, where: str, source_ids: set[str], report: Report
         if not (item.get("quote") or "").strip():
             report.error(spot, "quote is empty")
         src = item.get("source_id") or ""
-        if src and source_ids and src not in source_ids:
+        if not src:
+            continue
+        if sources and src not in sources:
             report.error(spot, f"source_id {src!r} is not in sources")
+            continue
+        source = sources.get(src, {})
+        # A source that could not be fetched cannot support a claim.
+        if source.get("readable") is False:
+            report.error(spot, f"source {src!r} is marked unreadable and cannot back a claim")
+        if item.get("offset", -1) == -1 and source.get("kind") not in (None, "figure"):
+            report.warn(spot, f"offset is -1 on a {source.get('kind')} source - "
+                              "a quote from fetched text should carry its position")
 
 
-def check_step(step: dict, index: int, concepts: set[str], source_ids: set[str],
+def check_step(step: dict, index: int, concepts: set[str], sources: dict,
                seen_ids: set[str], report: Report) -> None:
     where = f"steps[{index}]"
     step_id = step.get("step_id") or ""
@@ -94,10 +109,11 @@ def check_step(step: dict, index: int, concepts: set[str], source_ids: set[str],
     if step.get("kind") not in KINDS:
         report.error(where, f"kind must be one of {sorted(KINDS)}, got {step.get('kind')!r}")
 
+    label = (step.get("label") or "").strip()
     basis = (step.get("kind_basis") or "").strip()
     if not basis:
         report.error(where, "kind_basis is empty - state what did or did not change chemically")
-    elif basis == (step.get("label") or "").strip():
+    elif basis == label:
         report.warn(where, "kind_basis merely repeats label")
 
     service = step.get("service")
@@ -117,8 +133,14 @@ def check_step(step: dict, index: int, concepts: set[str], source_ids: set[str],
         elif concepts and uri not in concepts:
             # The single most damaging failure mode: a URI that looks real and is not.
             report.error(where, f"capability_uri {uri!r} is not declared in the vocabulary")
+        cap_basis = (step.get("capability_basis") or "").strip()
+        if not cap_basis:
+            report.error(where, "capability_basis is empty - say why this concept, "
+                                "citing the duty or equipment the source names")
+        elif cap_basis == label:
+            report.warn(where, "capability_basis merely repeats label")
 
-    check_evidence(step.get("evidence") or [], where, source_ids, report)
+    check_evidence(step.get("evidence") or [], where, sources, report)
 
     confidence = step.get("confidence")
     if confidence not in CONFIDENCES:
@@ -133,7 +155,7 @@ def check_step(step: dict, index: int, concepts: set[str], source_ids: set[str],
                 report.error(where, f"conditions.{key} must be a string as written, or null")
 
 
-def check_stream(stream: dict, index: int, step_ids: set[str], source_ids: set[str],
+def check_stream(stream: dict, index: int, step_ids: set[str], sources: dict,
                  seen_ids: set[str], report: Report) -> None:
     where = f"streams[{index}]"
     stream_id = stream.get("stream_id") or ""
@@ -178,10 +200,10 @@ def check_stream(stream: dict, index: int, step_ids: set[str], source_ids: set[s
         elif origin == "stated" and confidence < 1:
             report.warn(where, "origin is 'stated' but confidence is below 1.0")
 
-    check_evidence(stream.get("evidence") or [], where, source_ids, report, required=False)
+    check_evidence(stream.get("evidence") or [], where, sources, report, required=False)
 
 
-def check_range(rng: dict, where: str, source_ids: set[str], report: Report) -> None:
+def check_range(rng: dict, where: str, sources: dict, report: Report) -> None:
     if not isinstance(rng, dict):
         report.error(where, "must be an object")
         return
@@ -189,8 +211,8 @@ def check_range(rng: dict, where: str, source_ids: set[str], report: Report) -> 
     lo, hi = rng.get("min_si"), rng.get("max_si")
     if lo is None and hi is None:
         # The rule that matters most: this reads as "any value qualifies".
-        report.error(where, "both min_si and max_si are null - omit the quantity entirely "
-                            "instead; an unbounded range matches every candidate")
+        report.error(where, "both min_si and max_si are null - list the quantity in "
+                            "not_stated instead; an unbounded range matches every candidate")
     for label, value in (("min_si", lo), ("max_si", hi)):
         if value is not None and not isinstance(value, (int, float)):
             report.error(where, f"{label} must be a number or null, got {value!r}")
@@ -209,16 +231,18 @@ def check_range(rng: dict, where: str, source_ids: set[str], report: Report) -> 
         if rng.get("applicability") not in APPLICABILITY:
             report.error(where, "an external range must state applicability, one of "
                                 f"{sorted(APPLICABILITY)}")
-        evidence = rng.get("evidence")
-        if not evidence:
+    evidence = rng.get("evidence")
+    if not evidence:
+        if source == "external":
             report.error(where, "an external range must cite the source it was filled from")
-        else:
-            check_evidence([evidence] if isinstance(evidence, dict) else evidence,
-                           where, source_ids, report)
+    else:
+        check_evidence([evidence] if isinstance(evidence, dict) else evidence,
+                       where, sources, report)
 
 
 def check_requirement_spec(spec: dict, index: int, steps_by_id: dict, concepts: set[str],
-                           source_ids: set[str], report: Report) -> None:
+                           sources: dict, report: Report) -> list[str]:
+    """Returns the quantities this spec declared not stated."""
     where = f"requirement_specs[{index}]"
     step_id = spec.get("step_id") or ""
     if not step_id:
@@ -239,9 +263,25 @@ def check_requirement_spec(spec: dict, index: int, steps_by_id: dict, concepts: 
     if uri and concepts and uri not in concepts:
         report.error(where, f"capability_uri {uri!r} is not declared in the vocabulary")
 
+    not_stated = spec.get("not_stated")
+    if not isinstance(not_stated, list):
+        report.error(where, "not_stated is missing - list every quantity the source "
+                            "did not state, so absence is a claim rather than a silence")
+        not_stated = []
+    for name in not_stated:
+        if name not in QUANTITIES:
+            report.error(where, f"not_stated names {name!r}, which is not one of {list(QUANTITIES)}")
+
+    # Every quantity is either given or explicitly declared missing - never neither.
     for quantity in QUANTITIES:
-        if quantity in spec and spec[quantity] is not None:
-            check_range(spec[quantity], f"{where}.{quantity}", source_ids, report)
+        present = spec.get(quantity) is not None
+        declared = quantity in not_stated
+        if present and declared:
+            report.error(where, f"{quantity} is both given and listed in not_stated")
+        elif not present and not declared:
+            report.error(where, f"{quantity} is neither given nor listed in not_stated")
+        elif present:
+            check_range(spec[quantity], f"{where}.{quantity}", sources, report)
 
     for substance in spec.get("substances") or []:
         if not (substance.get("name") or "").strip():
@@ -249,6 +289,7 @@ def check_requirement_spec(spec: dict, index: int, steps_by_id: dict, concepts: 
         if substance.get("identifier") and not (substance.get("scheme") or "").strip():
             report.error(where, f"substance {substance.get('name')!r} has an identifier "
                                 "but no scheme naming what it identifies")
+    return list(not_stated)
 
 
 def main() -> int:
@@ -260,7 +301,9 @@ def main() -> int:
     args = parser.parse_args()
 
     try:
-        data = json.loads(args.path.read_text(encoding="utf-8"))
+        # utf-8-sig so a byte-order mark does not fail the file for a reason
+        # that has nothing to do with the decomposition.
+        data = json.loads(args.path.read_text(encoding="utf-8-sig"))
     except (OSError, json.JSONDecodeError) as exc:
         print(f"ERROR  {args.path}: {exc}", file=sys.stderr)
         return 1
@@ -287,22 +330,45 @@ def main() -> int:
         report.error("steps", "missing or empty")
         steps = []
 
-    source_ids = {s.get("source_id") for s in (data.get("sources") or []) if s.get("source_id")}
-    if not source_ids:
+    sources = {s.get("source_id"): s for s in (data.get("sources") or []) if s.get("source_id")}
+    if not sources:
         report.warn("sources", "no sources listed - evidence cannot be traced")
+    for source_id, source in sources.items():
+        if not (source.get("uri") or "").strip():
+            report.error(f"sources {source_id}", "uri is missing - a source with no locator "
+                                                 "cannot be checked by a reader")
+    if sources and all(s.get("readable") is False for s in sources.values()):
+        report.error("sources", "every source is marked unreadable - nothing here was actually "
+                                "read, so no step can be supported")
 
     seen_steps: set[str] = set()
     for index, step in enumerate(steps):
-        check_step(step, index, concepts, source_ids, seen_steps, report)
+        check_step(step, index, concepts, sources, seen_steps, report)
 
     steps_by_id = {s.get("step_id"): s for s in steps if s.get("step_id")}
 
     seen_streams: set[str] = set()
     for index, stream in enumerate(data.get("streams") or []):
-        check_stream(stream, index, seen_steps, source_ids, seen_streams, report)
+        check_stream(stream, index, seen_steps, sources, seen_streams, report)
 
-    for index, spec in enumerate(data.get("requirement_specs") or []):
-        check_requirement_spec(spec, index, steps_by_id, concepts, source_ids, report)
+    specs = data.get("requirement_specs") or []
+    any_not_stated = False
+    for index, spec in enumerate(specs):
+        if check_requirement_spec(spec, index, steps_by_id, concepts, sources, report):
+            any_not_stated = True
+
+    # Absence check: silence must not read as completeness.
+    spec_step_ids = {s.get("step_id") for s in specs if s.get("step_id")}
+    for step in steps:
+        if step.get("step_id") not in spec_step_ids:
+            report.error(f"steps {step.get('step_id')}",
+                         "no requirement_specs entry - every step must account for its "
+                         "envelope, even if only to say nothing was stated")
+
+    unresolved = data.get("unresolved") or []
+    if any_not_stated and not any(u.get("kind") == "operating_envelope" for u in unresolved):
+        report.error("unresolved", "quantities are marked not_stated but no "
+                                   "'operating_envelope' entry reports the gap")
 
     gap_ids = {g.get("step_id") for g in (data.get("vocabulary_gaps") or [])}
     for step in steps:
@@ -322,7 +388,7 @@ def main() -> int:
     total = len(report.errors)
     print(f"\n{total} error(s), {len(report.warnings)} warning(s) across "
           f"{len(steps)} step(s), {len(data.get('streams') or [])} stream(s), "
-          f"{len(data.get('requirement_specs') or [])} spec(s).")
+          f"{len(specs)} spec(s).")
     return 1 if total else 0
 
 
