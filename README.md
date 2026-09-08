@@ -12,10 +12,14 @@ skills/process-decomposition/
 ├── SKILL.md                          the instructions the agent reads
 ├── reference/
 │   ├── classification.md             the unit operation / unit process rubric and its edge cases
+│   ├── flowsheet.md                  reading topology off a diagram: roles, origins, ports, utilities
+│   ├── operating-envelope.md         SI ranges, unknown vs unbounded, the cited-source rule
 │   ├── output-schema.md              JSON and Turtle shapes
 │   └── vocabulary.md                 how to bind a step to a concept
 ├── vocab/unit-operations.default.ttl a standalone SKOS scheme (replaceable)
-├── examples/adipic-acid.json         a worked decomposition that validates clean
+├── examples/
+│   ├── adipic-acid.json              prose decomposition, steps only
+│   └── adipic-acid-flowsheet.json    diagram decomposition with topology and specs
 └── scripts/validate_decomposition.py dependency-free output validator
 ```
 
@@ -34,6 +38,30 @@ The skill is built around preventing those four. Every step must state *what
 changed chemically* (`kind_basis`), must carry a verbatim quote, and must either
 bind to a declared concept or be recorded as a vocabulary gap. The validator
 enforces all of it and exits non-zero on any violation.
+
+## Flowsheets and module matching
+
+Given a process flow diagram, the skill also emits `streams` (the topology, as a
+directed graph that may contain recycle cycles) and `requirement_specs` (the
+matching key: capability plus SI-normalised operating envelope, substances,
+materials and safety classes). Field names match a `MaterialStream` /
+`RequirementSpec` contract pair so the output loads without re-mapping.
+
+Two rules do most of the work:
+
+- **A diagram gives topology, not numbers.** Block flow diagrams carry equipment
+  identity and connectivity, almost never temperature, pressure or flow. Values
+  that are not in the source are omitted, and the gap is reported in `unresolved`.
+- **Unknown is not unconstrained.** An unknown quantity is an omitted key, never a
+  range open on both sides — the latter means "any value qualifies" and matches
+  every candidate module. The validator rejects it.
+
+A missing value may be filled only from a citable external source, recorded with
+its own `source_id` and marked `applicability: "stated_for_this_process"` or
+`"assumed_from_analogous_process"` — because a handbook value proves the number
+exists, not that this plant runs there.
+
+Reading a diagram needs a vision-capable model. Text-only sources work on any model.
 
 ## Using it with TrueForge
 
