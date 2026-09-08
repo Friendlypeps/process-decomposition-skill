@@ -1,0 +1,132 @@
+{
+  "run": {
+    "target_product": "adipic acid",
+    "granularity_note": "Reactor section split into feed mixing, oxidation, and off-gas separation; the source describes them in one paragraph but states separate conditions for each.",
+    "vocabulary": "vocab/unit-operations.default.ttl"
+  },
+  "sources": [
+    {
+      "source_id": "S1",
+      "uri": "https://example.org/adipic-acid-process",
+      "title": "Adipic acid via KA oil oxidation",
+      "retrieved_at": "2026-09-08T09:12:00Z"
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "O-1",
+      "order": 1,
+      "label": "Blending of KA oil with recycled catalyst solution",
+      "kind": "UNIT_OPERATION",
+      "kind_basis": "Two streams are combined; no species is created or consumed.",
+      "capability_uri": "http://example.org/unitop#Blending",
+      "capability_match": "exact",
+      "equipment_as_stated": "mixing vessel",
+      "inputs": ["KA oil", "recycled Cu/V catalyst solution"],
+      "outputs": ["reactor feed"],
+      "conditions": { "temperature": null, "pressure": null, "catalyst": null },
+      "reaction": null,
+      "hybrid_group": null,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "the KA oil is combined with recycled catalyst solution before entering the reactor",
+          "offset": 3980,
+          "note": ""
+        }
+      ],
+      "confidence": "medium",
+      "open_questions": [],
+      "notes": "Mixing is stated but no conditions are given."
+    },
+    {
+      "step_id": "P-2",
+      "order": 2,
+      "label": "Nitric acid oxidation of KA oil to adipic acid",
+      "kind": "UNIT_PROCESS",
+      "kind_basis": "Cyclohexanol and cyclohexanone are converted to adipic acid; C-C bonds are cleaved and new compounds formed.",
+      "capability_uri": "http://example.org/unitop#Oxidation",
+      "capability_match": "exact",
+      "equipment_as_stated": "stirred tank reactor cascade",
+      "inputs": ["reactor feed", "60% nitric acid"],
+      "outputs": ["crude adipic acid solution", "NOx off-gas"],
+      "conditions": { "temperature": "60-80 C", "pressure": null, "catalyst": "Cu(II)/NH4VO3" },
+      "reaction": { "equation": "C6H12O + HNO3 -> C6H10O4 + N2O + H2O", "balanced": false },
+      "hybrid_group": null,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "oxidised with 60% nitric acid at 60-80 C over a copper/vanadium catalyst",
+          "offset": 4213,
+          "note": ""
+        }
+      ],
+      "confidence": "high",
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "step_id": "O-3",
+      "order": 3,
+      "label": "Crystallisation of adipic acid from the reaction liquor",
+      "kind": "UNIT_OPERATION",
+      "kind_basis": "Adipic acid changes phase from dissolved to solid; the compound itself is unchanged.",
+      "capability_uri": "http://example.org/unitop#Crystallisation",
+      "capability_match": "exact",
+      "equipment_as_stated": "cooling crystalliser",
+      "inputs": ["crude adipic acid solution"],
+      "outputs": ["adipic acid crystals", "mother liquor"],
+      "conditions": { "temperature": "cooled to ambient", "pressure": null, "catalyst": null },
+      "reaction": null,
+      "hybrid_group": null,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "the liquor is cooled and the adipic acid crystallises out",
+          "offset": 4602,
+          "note": ""
+        }
+      ],
+      "confidence": "high",
+      "open_questions": [],
+      "notes": ""
+    },
+    {
+      "step_id": "O-4",
+      "order": 4,
+      "label": "Recovery of nitric acid from the mother liquor by melt crystallisation with sweating",
+      "kind": "UNIT_OPERATION",
+      "kind_basis": "A purification by repeated partial melting; no species is converted.",
+      "capability_uri": "",
+      "capability_match": "unmapped",
+      "equipment_as_stated": "sweating column",
+      "inputs": ["mother liquor"],
+      "outputs": ["recovered acid", "residue"],
+      "conditions": { "temperature": null, "pressure": null, "catalyst": null },
+      "reaction": null,
+      "hybrid_group": null,
+      "evidence": [
+        {
+          "source_id": "S1",
+          "quote": "residual acid is recovered and returned to the oxidation",
+          "offset": 4880,
+          "note": "The recovery method is named only in the figure caption; the sweating stage is inferred."
+        }
+      ],
+      "confidence": "low",
+      "open_questions": [
+        "Is the recovery a melt crystallisation with sweating, or simple distillation? The text does not say."
+      ],
+      "notes": ""
+    }
+  ],
+  "hybrids": [],
+  "vocabulary_gaps": [
+    {
+      "step_id": "O-4",
+      "described_as": "melt crystallisation with sweating",
+      "nearest_concept": "http://example.org/unitop#Crystallisation",
+      "why_not": "The scheme has no concept for melt crystallisation, and the sweating purification stage is not representable."
+    }
+  ]
+}

@@ -1,0 +1,166 @@
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix uo:   <http://example.org/unitop#> .
+
+# Default unit operation / unit process scheme.
+#
+# Ships so the skill works standalone. Replace it with the caller's own scheme
+# when one exists - see reference/vocabulary.md. The namespace is deliberately
+# example.org: a placeholder is obviously a placeholder, whereas a plausible URI
+# would quietly become real data.
+#
+# skos:broader is mandatory on every non-top concept: consumers match by walking
+# the hierarchy upward (skos:broader*), so an unparented leaf is unreachable.
+# No skos:exactMatch to POSC Caesar RDL or DEXPI is asserted here - an unverified
+# mapping would look authoritative and be wrong.
+
+uo:Scheme a skos:ConceptScheme ;
+    dcterms:title "Unit operations and unit processes (default scheme)"@en ;
+    dcterms:created "2026-09-08"^^xsd:date ;
+    skos:hasTopConcept uo:Separation , uo:Reaction , uo:HeatTransfer ,
+                       uo:Mixing , uo:Conveying , uo:SizeChange .
+
+########################################################################
+# Top concepts
+########################################################################
+
+uo:Separation a skos:Concept ; skos:inScheme uo:Scheme ; skos:topConceptOf uo:Scheme ;
+    skos:prefLabel "separation"@en ;
+    skos:definition "Unit operation separating a feed into streams of differing composition."@en .
+
+uo:Reaction a skos:Concept ; skos:inScheme uo:Scheme ; skos:topConceptOf uo:Scheme ;
+    skos:prefLabel "chemical reaction"@en ;
+    skos:definition "Unit process converting educts into products by chemical change."@en .
+
+uo:HeatTransfer a skos:Concept ; skos:inScheme uo:Scheme ; skos:topConceptOf uo:Scheme ;
+    skos:prefLabel "heat transfer"@en .
+
+uo:Mixing a skos:Concept ; skos:inScheme uo:Scheme ; skos:topConceptOf uo:Scheme ;
+    skos:prefLabel "mixing"@en .
+
+uo:Conveying a skos:Concept ; skos:inScheme uo:Scheme ; skos:topConceptOf uo:Scheme ;
+    skos:prefLabel "conveying"@en .
+
+uo:SizeChange a skos:Concept ; skos:inScheme uo:Scheme ; skos:topConceptOf uo:Scheme ;
+    skos:prefLabel "particle size change"@en .
+
+########################################################################
+# Separation
+########################################################################
+
+uo:ThermalSeparation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Separation ;
+    skos:prefLabel "thermal separation"@en .
+
+uo:Distillation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:ThermalSeparation ;
+    skos:prefLabel "distillation"@en .
+uo:Rectification a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Distillation ;
+    skos:prefLabel "rectification"@en ; skos:altLabel "fractional distillation"@en .
+uo:Evaporation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:ThermalSeparation ;
+    skos:prefLabel "evaporation"@en .
+uo:Drying a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:ThermalSeparation ;
+    skos:prefLabel "drying"@en ;
+    skos:definition "Removal of a liquid from a solid by vaporisation; the solid is chemically unchanged."@en .
+uo:Crystallisation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:ThermalSeparation ;
+    skos:prefLabel "crystallisation"@en .
+uo:Sublimation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:ThermalSeparation ;
+    skos:prefLabel "sublimation"@en .
+
+uo:MechanicalSeparation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Separation ;
+    skos:prefLabel "mechanical separation"@en .
+uo:Filtration a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:MechanicalSeparation ;
+    skos:prefLabel "filtration"@en .
+uo:Centrifugation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:MechanicalSeparation ;
+    skos:prefLabel "centrifugation"@en .
+uo:Sedimentation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:MechanicalSeparation ;
+    skos:prefLabel "sedimentation"@en .
+uo:Flotation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:MechanicalSeparation ;
+    skos:prefLabel "flotation"@en .
+uo:Screening a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:MechanicalSeparation ;
+    skos:prefLabel "screening"@en .
+
+uo:MassTransferSeparation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Separation ;
+    skos:prefLabel "mass transfer separation"@en .
+uo:Absorption a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:MassTransferSeparation ;
+    skos:prefLabel "absorption"@en ;
+    skos:scopeNote "Physical absorption only. Reactive absorption is a hybrid - emit a reaction step as well."@en .
+uo:Adsorption a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:MassTransferSeparation ;
+    skos:prefLabel "adsorption"@en .
+uo:Extraction a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:MassTransferSeparation ;
+    skos:prefLabel "extraction"@en ; skos:altLabel "solvent extraction"@en .
+uo:Leaching a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Extraction ;
+    skos:prefLabel "leaching"@en ;
+    skos:scopeNote "Dissolution of an already-soluble species. If the solid reacts, classify as a unit process."@en .
+uo:IonExchange a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:MassTransferSeparation ;
+    skos:prefLabel "ion exchange"@en ;
+    skos:scopeNote "Treated as a unit operation by convention, though chemically an exchange reaction."@en .
+uo:MembraneSeparation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:MassTransferSeparation ;
+    skos:prefLabel "membrane separation"@en .
+
+########################################################################
+# Reaction (unit processes)
+########################################################################
+
+uo:Oxidation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Reaction ;
+    skos:prefLabel "oxidation"@en .
+uo:Reduction a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Reaction ;
+    skos:prefLabel "reduction"@en .
+uo:Hydrogenation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Reduction ;
+    skos:prefLabel "hydrogenation"@en .
+uo:Nitration a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Reaction ;
+    skos:prefLabel "nitration"@en .
+uo:Sulfonation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Reaction ;
+    skos:prefLabel "sulfonation"@en .
+uo:Halogenation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Reaction ;
+    skos:prefLabel "halogenation"@en .
+uo:Esterification a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Reaction ;
+    skos:prefLabel "esterification"@en .
+uo:Hydrolysis a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Reaction ;
+    skos:prefLabel "hydrolysis"@en .
+uo:Neutralisation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Reaction ;
+    skos:prefLabel "neutralisation"@en .
+uo:Polymerisation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Reaction ;
+    skos:prefLabel "polymerisation"@en .
+uo:Calcination a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Reaction ;
+    skos:prefLabel "calcination"@en ;
+    skos:definition "Thermal decomposition of a solid. A unit process despite the thermal framing."@en .
+uo:Combustion a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Oxidation ;
+    skos:prefLabel "combustion"@en .
+uo:Electrolysis a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Reaction ;
+    skos:prefLabel "electrolysis"@en .
+uo:Fermentation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Reaction ;
+    skos:prefLabel "fermentation"@en .
+uo:Reforming a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Reaction ;
+    skos:prefLabel "reforming"@en .
+uo:Cracking a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Reaction ;
+    skos:prefLabel "cracking"@en .
+
+########################################################################
+# Heat transfer, mixing, conveying, size change
+########################################################################
+
+uo:Heating a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:HeatTransfer ;
+    skos:prefLabel "heating"@en .
+uo:Cooling a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:HeatTransfer ;
+    skos:prefLabel "cooling"@en .
+uo:Condensation a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:HeatTransfer ;
+    skos:prefLabel "condensation"@en .
+uo:Quenching a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Cooling ;
+    skos:prefLabel "quenching"@en .
+
+uo:Blending a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Mixing ;
+    skos:prefLabel "blending"@en .
+uo:Dispersing a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Mixing ;
+    skos:prefLabel "dispersing"@en .
+
+uo:Pumping a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Conveying ;
+    skos:prefLabel "pumping"@en .
+uo:Compression a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Conveying ;
+    skos:prefLabel "compression"@en .
+uo:Expansion a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Conveying ;
+    skos:prefLabel "expansion"@en .
+
+uo:Comminution a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:SizeChange ;
+    skos:prefLabel "comminution"@en ; skos:altLabel "milling"@en .
+uo:Agglomeration a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:SizeChange ;
+    skos:prefLabel "agglomeration"@en .
