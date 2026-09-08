@@ -47,6 +47,21 @@ requirement for "distillation" is satisfied by a resource offering
 For a `UNIT_PROCESS`, the concept names the *reaction type* (oxidation, nitration,
 hydrogenation) — not the vessel. Equipment goes in `equipment_as_stated`.
 
+**Bind to what happens to the molecules, not to the section of plant it happens
+in.** A sequence that sits inside an "oxidation section" is not all oxidation.
+Observed failures, all from steps correctly labelled and then wrongly bound:
+
+| Step | Wrongly bound to | Belongs to |
+|---|---|---|
+| Trapping a hydroperoxide as a borate ester | `Oxidation` | `Esterification` |
+| Decomposing a hydroperoxide over a catalyst | `Oxidation` | `Reaction` (broader; no leaf) |
+| Hydrolysing an ester back to alcohol and acid | `Oxidation` | `Hydrolysis` |
+
+The test: read your own `kind_basis` back. If it says an ester formed, the
+concept cannot be oxidation. `capability_basis` should name the feature that
+makes the concept fit — "an ester bond forms" — not restate the step's position
+in the process.
+
 This matters downstream: a reactor is generally selected on operating envelope and
 material compatibility rather than on a named capability, so a unit process bound
 to a vessel type will match against the wrong criteria.

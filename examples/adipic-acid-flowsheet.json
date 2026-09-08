@@ -15,6 +15,68 @@
       "readable": true
     }
   ],
+  "coverage": [
+    {
+      "action": "oxidizers",
+      "quote": "block 1, legend 'Oxidizers', fed by the cyclohexane line",
+      "step_id": "P-1"
+    },
+    {
+      "action": "decanter",
+      "quote": "block 2, legend 'Decanter'",
+      "step_id": "O-2"
+    },
+    {
+      "action": "boric acid recovery",
+      "quote": "block 3, legend 'Boric acid recovery', with a return line to block 1",
+      "step_id": "O-3"
+    },
+    {
+      "action": "CHHP decomposition",
+      "quote": "block 4, legend 'CHHP decomposition'",
+      "step_id": "P-4"
+    },
+    {
+      "action": "KA oil purification",
+      "quote": "block 5, legend 'KA oil purification'",
+      "step_id": "O-5"
+    },
+    {
+      "action": "converters",
+      "quote": "block 6, legend 'Converters', fed by the nitric acid line",
+      "step_id": "P-6"
+    },
+    {
+      "action": "bleacher and concentration still",
+      "quote": "block 7, legend 'Bleacher and concentration still'",
+      "step_id": "O-7"
+    },
+    {
+      "action": "crystallization and centrifugation steps",
+      "quote": "block 8, legend 'Crystallization and centrifugation steps'",
+      "step_id": "O-8"
+    },
+    {
+      "action": "crystallization and centrifugation steps",
+      "quote": "block 8, legend 'Crystallization and centrifugation steps'",
+      "step_id": "O-9"
+    },
+    {
+      "action": "rotary dryer",
+      "quote": "block 9, legend 'Rotary dryer', discharging to the adipic acid line",
+      "step_id": "O-10"
+    },
+    {
+      "action": "cooling tower",
+      "quote": "block 11, legend 'Cooling tower', marked CW",
+      "step_id": "O-11"
+    },
+    {
+      "action": "boiler",
+      "quote": "block 12, legend 'Boiler', marked ST",
+      "step_id": "O-12"
+    }
+  ],
   "steps": [
     {
       "step_id": "P-1",

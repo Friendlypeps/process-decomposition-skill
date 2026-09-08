@@ -94,17 +94,29 @@ one that was read.
    load `reference/gap-filling.md` and delegate the search — one sub-agent per
    step, after the decomposition validates, never before.
 7. **Quote your evidence.** Every step and every stream needs at least one
-   `evidence` entry. If you inferred something rather than read it, say so in
-   `evidence[].note` and lower the confidence.
-8. **Emit** JSON, and Turtle when asked. See `reference/output-schema.md`.
-9. **Validate** before reporting:
+   `evidence` entry, with the character offset of the quote in the fetched text.
+   If you inferred something rather than read it, say so in `evidence[].note` and
+   lower the confidence.
+8. **Do the coverage pass.** Re-read the source looking only for process verbs —
+   oxidised, separated, crystallised, centrifuged, dried, recycled, decomposed,
+   hydrolysed, concentrated, filtered. Every one becomes a `coverage` entry
+   naming either the step that represents it or why it is excluded. This is
+   where dropped operations surface: a source spends paragraphs on the chemistry
+   and half a clause on "final centrifugation and drying", and a decomposition
+   written from the chemistry alone loses both.
+9. **Emit** JSON, and Turtle when asked. See `reference/output-schema.md`.
+10. **Validate** before reporting:
    `python scripts/validate_decomposition.py <file.json>`
    Fix what it reports. Do not hand over output that fails validation.
 
 ## What not to do
 
 - Do not merge a reaction and its downstream separation into one step because the
-  source describes them in one sentence.
+  source describes them in one sentence. A label containing "and" or "then" —
+  "separation and crystallization", "centrifugation and drying" — is almost
+  always several steps wearing one name.
+- Do not stop at the chemistry. A source that describes five reactions and
+  mentions "centrifugation and drying" in passing still contains seven steps.
 - Do not classify from a verb in isolation. "Extraction" is a unit operation;
   "reactive extraction" is a hybrid and gets two steps or a `hybrid` marker.
 - Do not fill in conditions from background knowledge and present them as read.

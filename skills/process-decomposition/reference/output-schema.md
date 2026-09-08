@@ -19,6 +19,7 @@ or condition from this file into your output.
 {
   "run":               { ... },
   "sources":           [ ... ],
+  "coverage":          [ ... ],
   "steps":             [ ... ],
   "streams":           [ ... ],
   "requirement_specs": [ ... ],
@@ -32,6 +33,38 @@ or condition from this file into your output.
 meaningful statement — "this step's envelope was not stated" — and an absent spec
 is not. Omitting them is how a decomposition ends up silently claiming nothing was
 missing.
+
+## coverage[]
+
+Every process action the source names, mapped to the step that represents it or
+explicitly excluded. This is the completeness record.
+
+```json
+[
+  { "action": "final centrifugation", "quote": "final centrifugation and drying",
+    "step_id": "O-9" },
+  { "action": "butadiene-based route", "quote": "alternative routes have been researched",
+    "excluded_because": "named as a researched alternative, not part of the described route" }
+]
+```
+
+Each entry carries exactly one of `step_id` or `excluded_because`.
+
+Two failures this catches, both invisible to any check on the steps alone:
+
+- **A dropped operation.** Sources mention separations in passing — "water and
+  monobasic acids separated", "final centrifugation and drying" — while
+  describing the chemistry at length. An action with no entry is an omission
+  nobody would otherwise see.
+- **Compression.** When several actions map to one `step_id`, that step is doing
+  the work of several. Split it. If the source genuinely treats them as one
+  indivisible operation, set `merged_because` on the step to say why — the
+  validator accepts the merge only with that justification.
+
+Write coverage by re-reading the source *after* drafting the steps, looking only
+for process verbs: oxidised, separated, crystallised, centrifuged, dried,
+recycled, decomposed, hydrolysed, concentrated, filtered, distilled. Every one is
+either a step or an exclusion.
 
 ## sources[]
 

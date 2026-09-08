@@ -60,13 +60,30 @@ def load_vocabulary(path: Path) -> set[str]:
 class Report:
     def __init__(self) -> None:
         self.errors: list[str] = []
-        self.warnings: list[str] = []
+        # Grouped by message: sixteen copies of one warning is one finding, and
+        # printing it sixteen times buries the other fifteen findings.
+        self.warnings: dict[str, list[str]] = {}
 
     def error(self, where: str, message: str) -> None:
         self.errors.append(f"ERROR  {where}: {message}")
 
     def warn(self, where: str, message: str) -> None:
-        self.warnings.append(f"WARN   {where}: {message}")
+        self.warnings.setdefault(message, []).append(where)
+
+    def warning_lines(self) -> list[str]:
+        lines = []
+        for message, places in self.warnings.items():
+            if len(places) == 1:
+                lines.append(f"WARN   {places[0]}: {message}")
+            else:
+                shown = ", ".join(places[:3])
+                more = f", +{len(places) - 3} more" if len(places) > 3 else ""
+                lines.append(f"WARN   {message} [x{len(places)}: {shown}{more}]")
+        return lines
+
+    @property
+    def warning_count(self) -> int:
+        return sum(len(places) for places in self.warnings.values())
 
 
 def check_evidence(items: list, where: str, sources: dict, report: Report,
@@ -292,6 +309,51 @@ def check_requirement_spec(spec: dict, index: int, steps_by_id: dict, concepts: 
     return list(not_stated)
 
 
+def check_coverage(data: dict, steps_by_id: dict, report: Report) -> None:
+    """
+    Every process action named in the source must reach a step or an explicit
+    exclusion. This is what catches the two quiet failures a shape check cannot:
+    an action that was dropped, and several actions compressed into one step.
+    """
+    coverage = data.get("coverage")
+    if not isinstance(coverage, list) or not coverage:
+        report.error("coverage", "missing - list every process action the source names, "
+                                 "each mapped to a step_id or excluded_because")
+        return
+
+    per_step: dict[str, list[str]] = {}
+    for index, entry in enumerate(coverage):
+        where = f"coverage[{index}]"
+        action = (entry.get("action") or "").strip()
+        if not action:
+            report.error(where, "action is empty - name the operation as the source words it")
+        if not (entry.get("quote") or "").strip():
+            report.error(where, "quote is empty - coverage is a claim about the source")
+
+        step_id = entry.get("step_id") or ""
+        excluded = (entry.get("excluded_because") or "").strip()
+        if bool(step_id) == bool(excluded):
+            report.error(where, "needs exactly one of step_id or excluded_because")
+        elif step_id:
+            if step_id not in steps_by_id:
+                report.error(where, f"step_id {step_id!r} is not a known step")
+            else:
+                per_step.setdefault(step_id, []).append(action or f"entry {index}")
+
+    # Several distinct actions on one step is compression, not decomposition.
+    for step_id, actions in per_step.items():
+        if len(actions) > 1 and not (steps_by_id[step_id].get("merged_because") or "").strip():
+            report.error(f"steps {step_id}",
+                         f"{len(actions)} source actions map to this one step "
+                         f"({'; '.join(actions)}) - split them, or set merged_because "
+                         "to say why the source treats them as indivisible")
+
+    for step_id in steps_by_id:
+        if step_id not in per_step:
+            report.warn(f"steps {step_id}",
+                        "no coverage entry names the source action this step came from")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("path", type=Path)
@@ -370,6 +432,8 @@ def main() -> int:
         report.error("unresolved", "quantities are marked not_stated but no "
                                    "'operating_envelope' entry reports the gap")
 
+    check_coverage(data, steps_by_id, report)
+
     gap_ids = {g.get("step_id") for g in (data.get("vocabulary_gaps") or [])}
     for step in steps:
         if step.get("capability_match") == "unmapped" and step.get("step_id") not in gap_ids:
@@ -383,10 +447,10 @@ def main() -> int:
             report.error(f"steps {step.get('step_id')}",
                          f"hybrid_group {group!r} has no entry in hybrids")
 
-    for line in report.errors + report.warnings:
+    for line in report.errors + report.warning_lines():
         print(line)
     total = len(report.errors)
-    print(f"\n{total} error(s), {len(report.warnings)} warning(s) across "
+    print(f"\n{total} error(s), {report.warning_count} warning(s) across "
           f"{len(steps)} step(s), {len(data.get('streams') or [])} stream(s), "
           f"{len(specs)} spec(s).")
     return 1 if total else 0

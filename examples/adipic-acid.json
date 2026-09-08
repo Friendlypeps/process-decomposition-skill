@@ -14,6 +14,28 @@
       "readable": true
     }
   ],
+  "coverage": [
+    {
+      "action": "mixing vessel",
+      "quote": "the KA oil is combined with recycled catalyst solution before entering the reactor",
+      "step_id": "O-1"
+    },
+    {
+      "action": "stirred tank reactor cascade",
+      "quote": "oxidised with 60% nitric acid at 60-80 C over a copper/vanadium catalyst",
+      "step_id": "P-2"
+    },
+    {
+      "action": "cooling crystalliser",
+      "quote": "the liquor is cooled and the adipic acid crystallises out",
+      "step_id": "O-3"
+    },
+    {
+      "action": "sweating column",
+      "quote": "residual acid is recovered and returned to the oxidation",
+      "step_id": "O-4"
+    }
+  ],
   "steps": [
     {
       "step_id": "O-1",
