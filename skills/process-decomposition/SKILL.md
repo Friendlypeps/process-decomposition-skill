@@ -70,7 +70,9 @@ missing value may be filled, and it requires a citation.
    wrong.
 6. **Build the operating envelopes.** Load `reference/operating-envelope.md`.
    SI-normalise every range; omit unknown quantities entirely rather than
-   emitting open-ended ones.
+   emitting open-ended ones. When gaps remain and sub-agents are available,
+   load `reference/gap-filling.md` and delegate the search — one sub-agent per
+   step, after the decomposition validates, never before.
 7. **Quote your evidence.** Every step and every stream needs at least one
    `evidence` entry. If you inferred something rather than read it, say so in
    `evidence[].note` and lower the confidence.

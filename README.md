@@ -13,6 +13,7 @@ skills/process-decomposition/
 ├── reference/
 │   ├── classification.md             the unit operation / unit process rubric and its edge cases
 │   ├── flowsheet.md                  reading topology off a diagram: roles, origins, ports, utilities
+│   ├── gap-filling.md                delegating the envelope search to sub-agents, and merging it back
 │   ├── operating-envelope.md         SI ranges, unknown vs unbounded, the cited-source rule
 │   ├── output-schema.md              JSON and Turtle shapes
 │   └── vocabulary.md                 how to bind a step to a concept
