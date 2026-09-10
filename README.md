@@ -19,6 +19,7 @@ skills/process-decomposition/          ← the only path mounted into the sandbo
 │   └── vocabulary.md                  how to bind a step to a concept
 ├── vocab/unit-operations.default.ttl  a standalone SKOS scheme (replaceable)
 └── scripts/
+    ├── concepts.py                    query the vocabulary instead of reading it
     ├── fetch_source.py                fetch, then find quotes and quantities by offset
     ├── merge_fragments.py             fold gap-filling fragments into the decomposition
     ├── to_si.py                       unit conversion

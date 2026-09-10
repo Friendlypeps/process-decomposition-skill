@@ -1,95 +1,54 @@
 # Output schema
 
-JSON is canonical. Turtle is a projection of it — emit Turtle only when asked, and
-never emit Turtle that says something the JSON does not.
+JSON is canonical; Turtle is a projection of it. Field names and enum values match
+the `ProcessStep`, `MaterialStream` and `RequirementSpec` contracts used
+downstream, so a consumer loads the output without renaming. Extra keys
+(`kind_basis`, `capability_basis`, `evidence`, `source`, `applicability`,
+`not_stated`, `from_port`) are ignored by those deserializers.
 
-Field names and enum values deliberately match the `ProcessStep`, `MaterialStream`
-and `RequirementSpec` contracts used downstream, so a consumer can load the output
-without renaming. Extra keys this skill adds (`kind_basis`, `capability_basis`,
-`evidence`, `source`, `applicability`, `not_stated`, `from_port`) are ignored by
-those deserializers, so carrying them costs nothing.
-
-The examples below use methyl acetate esterification. They are shape
-illustrations, **not** a decomposition to imitate — never carry a step, substance
-or condition from this file into your output.
-
-## Top level
+Examples below use methyl acetate esterification — shape illustrations, **not** a
+decomposition to imitate. Never carry a step, substance or condition from here.
 
 ```json
-{
-  "run":               { ... },
-  "sources":           [ ... ],
-  "coverage":          [ ... ],
-  "steps":             [ ... ],
-  "streams":           [ ... ],
-  "requirement_specs": [ ... ],
-  "hybrids":           [ ... ],
-  "vocabulary_gaps":   [ ... ],
-  "unresolved":        [ ... ]
-}
+{ "run": {...}, "sources": [...], "coverage": [...], "steps": [...],
+  "streams": [...], "requirement_specs": [...], "hybrids": [...],
+  "vocabulary_gaps": [...], "unresolved": [...] }
 ```
-
-**Every step gets a `requirement_specs` entry.** A spec with no ranges is a
-meaningful statement — "this step's envelope was not stated" — and an absent spec
-is not. Omitting them is how a decomposition ends up silently claiming nothing was
-missing.
-
-## coverage[]
-
-Every process action the source names, mapped to the step that represents it or
-explicitly excluded. This is the completeness record.
-
-```json
-[
-  { "action": "final centrifugation", "quote": "final centrifugation and drying",
-    "step_id": "O-9" },
-  { "action": "butadiene-based route", "quote": "alternative routes have been researched",
-    "excluded_because": "named as a researched alternative, not part of the described route" }
-]
-```
-
-Each entry carries exactly one of `step_id` or `excluded_because`.
-
-Two failures this catches, both invisible to any check on the steps alone:
-
-- **A dropped operation.** Sources mention separations in passing — "water and
-  monobasic acids separated", "final centrifugation and drying" — while
-  describing the chemistry at length. An action with no entry is an omission
-  nobody would otherwise see.
-- **Compression.** When several actions map to one `step_id`, that step is doing
-  the work of several. Split it. If the source genuinely treats them as one
-  indivisible operation, set `merged_because` on the step to say why — the
-  validator accepts the merge only with that justification.
-
-Write coverage by re-reading the source *after* drafting the steps, looking only
-for process verbs: oxidised, separated, crystallised, centrifuged, dried,
-recycled, decomposed, hydrolysed, concentrated, filtered, distilled. Every one is
-either a step or an exclusion.
 
 ## sources[]
 
 ```json
-{ "source_id": "S1", "uri": "https://example.org/article", "title": "...",
-  "kind": "web", "retrieved_at": "2026-09-08T18:42:00Z", "chars": 18400,
-  "readable": true }
+{ "source_id": "S1", "uri": "https://…", "title": "…", "kind": "web",
+  "retrieved_at": "2026-09-08T18:42:00Z", "chars": 18400, "readable": true }
 ```
 
-`kind` is `web`, `pdf`, `file`, `figure`, or `patent`. `chars` is how much text you
-actually read; `readable: false` marks a source you tried and failed to fetch.
+`kind`: `web` | `pdf` | `file` | `figure` | `patent`. `chars` is how much text you
+read. `readable: false` marks a fetch that failed — **it cannot back a claim**: no
+evidence may cite it, no step may rest on it. Produced by `fetch_source.py fetch`.
 
-**A source you could not fetch cannot back a claim.** If `readable` is false, no
-evidence may cite it, and no step may rest on it. A download that 403s is a gap to
-report, not a source to cite. If you could not read the source at all, say so and
-emit nothing rather than reconstructing the process from what you know.
+## coverage[]
+
+Every process action the source names, mapped to a step or excluded.
+
+```json
+[ { "action": "final centrifugation", "quote": "final centrifugation and drying",
+    "step_id": "O-9" },
+  { "action": "butadiene-based route", "quote": "alternative routes have been researched",
+    "excluded_because": "a researched alternative, not part of the described route" } ]
+```
+
+Exactly one of `step_id` or `excluded_because`. Catches two things invisible to any
+check on the steps alone: **a dropped operation** (an action with no entry) and
+**compression** (several actions mapping to one step — split it, or set
+`merged_because` on the step to say why the source treats them as indivisible).
 
 ## steps[]
 
 ```json
-{
-  "step_id": "P-1", "order": 1, "diagram_ref": "3",
+{ "step_id": "P-1", "order": 1, "diagram_ref": "3",
   "label": "Esterification of acetic acid with methanol",
   "kind": "UNIT_PROCESS",
-  "kind_basis": "Acetic acid and methanol are converted to methyl acetate and water; an ester bond forms.",
+  "kind_basis": "Acetic acid and methanol become methyl acetate and water; an ester bond forms.",
   "service": "process",
   "capability_uri": "http://example.org/unitop#Esterification",
   "capability_match": "exact",
@@ -99,91 +58,80 @@ emit nothing rather than reconstructing the process from what you know.
   "conditions": { "temperature": "70 C", "pressure": null, "catalyst": "sulfuric acid" },
   "reaction": { "equation": "CH3COOH + CH3OH -> CH3COOCH3 + H2O", "balanced": true },
   "hybrid_group": "H1",
-  "evidence": [{ "source_id": "S1", "quote": "...", "offset": 4120, "note": "" }],
-  "confidence": "high", "open_questions": [], "notes": ""
-}
+  "evidence": [{ "source_id": "S1", "quote": "…", "offset": 4120, "note": "" }],
+  "confidence": "high", "open_questions": [], "notes": "" }
 ```
 
-- `kind` — exactly `"UNIT_OPERATION"` or `"UNIT_PROCESS"`. A hybrid is two steps.
-- `kind_basis` — one sentence naming what changed or did not change chemically.
-- `capability_basis` — one sentence saying why *this* concept, referring to the
-  duty or equipment the source names. Required unless `capability_match` is
-  `"unmapped"`. Without it a wrong binding is invisible in review.
-- `service` — `"process"` or `"utility"`.
-- `capability_match` — `"exact"`, `"broader"`, or `"unmapped"`. When `"unmapped"`,
-  `capability_uri` must be `""` and a `vocabulary_gaps` entry must exist.
-- `conditions` — strings as written, or `null`. The machine-comparable form lives
-  in `requirement_specs`.
-- `evidence.offset` — the character position of the quote in the fetched text. Use
-  `-1` only for a figure, where there is no text offset.
+- `kind` — exactly `UNIT_OPERATION` or `UNIT_PROCESS`. A hybrid is two steps.
+- `kind_basis` — one sentence on what changed or did not change chemically.
+- `capability_basis` — one sentence on why *this* concept, naming the duty or
+  equipment the source gives. Required unless `unmapped`; without it a wrong
+  binding is invisible in review.
+- `service` — `process` or `utility`.
+- `capability_match` — `exact` | `broader` | `unmapped`. When `unmapped`,
+  `capability_uri` is `""` and a `vocabulary_gaps` entry must exist.
+- `conditions` — strings as written, or `null`. Machine-comparable form lives in
+  `requirement_specs`.
+- `evidence.offset` — position of the quote in the fetched text, from
+  `fetch_source.py find`. `-1` only for a figure.
 
 ## streams[]
 
-One edge of the flowsheet. See `reference/flowsheet.md` for roles and origins.
-
 ```json
-{
-  "stream_id": "ST-2", "label": "column overhead",
+{ "stream_id": "ST-2", "label": "column overhead",
   "substances": [{ "name": "methyl acetate", "identifier": "79-20-9", "scheme": "CAS" }],
   "role": "ProductStream", "from_step": "P-1", "to_step": "",
   "from_port": "overhead", "to_port": null, "spec": "",
   "origin": "boundary", "confidence": 1.0,
-  "evidence": [{ "source_id": "S1", "quote": "...", "offset": 4460, "note": "" }]
-}
+  "evidence": [{ "source_id": "S1", "quote": "…", "offset": 4460, "note": "" }] }
 ```
 
-- `role` — `Feed`, `Intermediate`, `ProductStream`, `Recycle`, `ByproductStream`,
-  `OffGas`, `Utility`, `Waste`.
-- `origin` — `stated`, `inferred`, `boundary`.
-- `from_step` / `to_step` — a `step_id`, or `""` at the plant boundary. An
+- `role` — `Feed` | `Intermediate` | `ProductStream` | `Recycle` |
+  `ByproductStream` | `OffGas` | `Utility` | `Waste`
+- `origin` — `stated` | `inferred` | `boundary`
+- `from_step`/`to_step` — a `step_id`, or `""` at the plant boundary. An
   `Intermediate` or `Recycle` open at one end is a gap; report it in `unresolved`.
-- `from_port` / `to_port` — optional free-text hints. Annotations only.
-- Recycles make the graph cyclic. That is expected.
+- `from_port`/`to_port` — optional free-text hints; annotations only.
+- Recycles make the graph cyclic. Expected.
+
+See `reference/flowsheet.md` for roles, origins and reading a diagram.
 
 ## requirement_specs[]
 
-The machine-comparable matching key. One per step, always.
+One per step, always.
 
 ```json
-{
-  "step_id": "P-1", "kind": "UNIT_PROCESS",
+{ "step_id": "P-1", "kind": "UNIT_PROCESS",
   "capability_uri": "http://example.org/unitop#Esterification",
-  "temperature": {
-    "min_si": 338.15, "max_si": 348.15, "unit_si": "K",
-    "display_unit": "degC", "quantity_kind": "Temperature",
-    "source": "primary",
-    "evidence": { "source_id": "S1", "quote": "held at 65-75 C", "offset": 4180 }
-  },
+  "temperature": { "min_si": 338.15, "max_si": 348.15, "unit_si": "K",
+                   "display_unit": "degC", "quantity_kind": "Temperature",
+                   "source": "primary",
+                   "evidence": { "source_id": "S1", "quote": "held at 65-75 C", "offset": 4180 } },
   "not_stated": ["pressure", "volume", "throughput"],
   "phase": "liquid",
   "substances": [{ "name": "acetic acid", "identifier": "64-19-7", "scheme": "CAS" }],
-  "materials_required": [], "safety_classes": []
-}
+  "materials_required": [], "safety_classes": [] }
 ```
 
-Rules, in order of how badly they bite when broken:
+In order of how badly they bite:
 
-1. **Each of `temperature`, `pressure`, `volume`, `throughput` is either present as
-   a range or listed in `not_stated`.** Never both, never neither. This is what
-   makes "we did not find it" a claim in the data rather than a silence.
+1. **Each of `temperature`, `pressure`, `volume`, `throughput` is either a range or
+   in `not_stated`.** Never both, never neither. This makes "we did not find it" a
+   claim rather than a silence.
 2. **Omit an unknown quantity's range entirely.** Never
-   `{"min_si": null, "max_si": null}` — that is "any value qualifies", the opposite
-   of unknown.
-3. **Always SI.** `unit_si` and `quantity_kind` are mandatory on every range.
-   Consumers compare these numbers in queries that cannot convert units.
-4. **`source`** is `"primary"` (read from the process document) or `"external"`
-   (filled from a cited source). An `"external"` range must carry `applicability`
-   and `evidence` naming a `source_id` that exists and is `readable`.
-5. Emit a spec for utility steps too; `service` on the step is what excludes them.
+   `{"min_si": null, "max_si": null}` — that is "any value qualifies".
+3. **Always SI.** `unit_si` and `quantity_kind` mandatory. Use `to_si.py`.
+4. `source` is `primary` (the process document) or `external` (a cited fill). An
+   `external` range needs `applicability` and `evidence` naming a readable source.
+5. Utility steps get specs too; `service` on the step is what excludes them.
 
-When any step has a non-empty `not_stated`, `unresolved` must carry at least one
-`operating_envelope` entry. A report that says "unresolved: none" while no
-envelope was found is worse than no report.
+When any step has a non-empty `not_stated`, `unresolved` must carry an
+`operating_envelope` entry.
 
 ## Turtle
 
-Bind to the scheme named in `run.vocabulary`; keep `step_id` and `stream_id` as
-local names so the two representations stay joinable.
+Bind to the scheme in `run.vocabulary`; keep `step_id` and `stream_id` as local
+names so both representations stay joinable.
 
 ```turtle
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
@@ -201,6 +149,5 @@ ex:P-1 a pd:UnitProcess ;
     prov:wasDerivedFrom ex:S1 .
 ```
 
-A step with `capability_match "unmapped"` carries **no** `pd:requiresCapability`
-triple, and a quantity in `not_stated` emits no triple at all. An absent triple is
-honest; an empty or invented one is not.
+An `unmapped` step carries **no** `pd:requiresCapability` triple, and a quantity in
+`not_stated` emits none. An absent triple is honest; an empty or invented one is not.
