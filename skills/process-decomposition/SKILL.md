@@ -50,13 +50,28 @@ missing value may be filled, and it requires a citation.
 
 ## Fetch before you claim
 
-Open a page by navigating to it. Do not reach a page by evaluating script in
-whatever document happens to be loaded — that reads an empty tab as easily as an
-article, and gives no signal which one you got.
+Use the fetcher. It saves the text to disk and prints the `sources[]` entry:
 
-Record what you actually read: each source's URI, the time you fetched it, and
-how much text came back. A fetch that failed — a 403, a download that would not
-resolve, an image you could not open — is recorded as `readable: false`.
+```bash
+python scripts/fetch_source.py fetch <URL> --id S1 --out /tmp/src
+python scripts/fetch_source.py find "staged air oxidation" --in /tmp/src/S1.txt
+python scripts/fetch_source.py quantities --in /tmp/src/S1.txt
+python scripts/fetch_source.py window 4329 --in /tmp/src/S1.txt
+```
+
+`find` returns the character offset of a phrase, which is what makes an evidence
+span checkable — a quote without a position cannot be verified by a reader.
+`quantities` lists every stated temperature, pressure, volume and flow with its
+offset; an empty result means the source states no conditions, which is a finding
+you report rather than a failure.
+
+Use a browser only for what the fetcher cannot reach: pages that need
+interaction, and figures. Open those by navigating to them. Do not reach a page
+by evaluating script in whatever document happens to be loaded — that reads an
+empty tab as easily as an article, and gives no signal which one you got.
+
+A fetch that failed — a 403, a download that would not resolve, an image you
+could not open — is recorded as `readable: false`.
 
 **A source you could not fetch cannot support a claim.** No evidence may cite it
 and no step may rest on it. If you could not read the source at all, say so and
@@ -94,7 +109,8 @@ one that was read.
    load `reference/gap-filling.md` and delegate the search — one sub-agent per
    step, after the decomposition validates, never before.
 7. **Quote your evidence.** Every step and every stream needs at least one
-   `evidence` entry, with the character offset of the quote in the fetched text.
+   `evidence` entry, with the character offset of the quote in the fetched text —
+   get it from `fetch_source.py find`, do not write `-1` when the source is text.
    If you inferred something rather than read it, say so in `evidence[].note` and
    lower the confidence.
 8. **Do the coverage pass.** Re-read the source looking only for process verbs —

@@ -154,30 +154,26 @@ stays open, which is different from a gap nobody looked at.
 
 ## Merging
 
-The parent, not a sub-agent, does this:
+Run the merger. It is all bookkeeping and none of it is judgment:
 
-1. Read every fragment. A missing file means that sub-agent failed — record it in
-   `unresolved`, do not silently drop the step.
-2. Convert each `as_read` value:
+```bash
+python scripts/merge_fragments.py /tmp/decomposition.json --env /tmp/env
+python scripts/validate_decomposition.py /tmp/decomposition.json
+```
 
-   ```bash
-   python scripts/to_si.py "120~160°C"
-   ```
+It appends each fragment's sources, converts every `as_read` value through
+`to_si.py`, writes the range into the matching `requirement_specs` entry and
+clears it from `not_stated`, keeps a `"source": "primary"` value over anything a
+sub-agent found, and records what is still missing in `unresolved` — separating
+*searched and not found* from *not attempted*, which is what a step with no
+fragment means.
 
-   It returns the `min_si`/`max_si`/`unit_si`/`display_unit`/`quantity_kind`
-   object. If it exits non-zero the source stated a word and not a bound
-   ("superatmospheric", "low-temperature") — that quantity goes to `not_stated`,
-   and the wording is worth a line in `notes`.
-3. Append each fragment's `sources` to the top-level `sources`. Ids are already
-   prefixed, so there is nothing to renumber.
-4. Copy each converted quantity into the step's `requirement_specs` entry, and
-   remove it from that spec's `not_stated`. Never overwrite a value read from the
-   primary document — a `"source": "primary"` range outranks anything a sub-agent
-   found.
-5. Carry every `not_found` and every un-started sub-agent into `unresolved`.
-6. Re-run `scripts/validate_decomposition.py`. It checks that every external range
-   cites a `source_id` that now exists and is readable, which is what catches a
-   fragment whose sources were dropped in the merge.
+Read its notes. A value it could not convert ("superatmospheric",
+"low-temperature") is a source stating a word rather than a bound: that quantity
+stays in `not_stated`, and the wording is worth a line in the step's `notes`.
+
+Do not merge by hand. Every part of it is mechanical, and doing it by hand is how
+a fragment gets discarded over the shape of its range.
 
 ## What goes wrong
 
