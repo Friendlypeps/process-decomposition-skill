@@ -18,7 +18,8 @@ skills/process-decomposition/          ← the only path mounted into the sandbo
 │   ├── output-schema.md               JSON and Turtle shapes
 │   └── vocabulary.md                  how to bind a step to a concept
 ├── vocab/unit-operations.default.ttl  a standalone SKOS scheme (replaceable)
-└── scripts/validate_decomposition.py  dependency-free output validator
+├── scripts/validate_decomposition.py  dependency-free output validator
+└── scripts/to_si.py                   unit conversion for merging gap-filled values
 
 examples/                              deliberately OUTSIDE the mounted path
 ├── adipic-acid.json                   prose decomposition
