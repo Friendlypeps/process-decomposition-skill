@@ -17,11 +17,19 @@ One sub-agent per **step**, not per quantity. A step needing temperature,
 pressure and materials is one brief; splitting it makes three agents read the
 same paper.
 
-**Spawn in batches of four or five.** Sub-agent creation is rate-limited, and a
-spawn that is refused is a step nobody ever searched. Launch a batch, merge its
-fragments, launch the next. Any step whose sub-agent never started is recorded in
-`unresolved` as *not attempted* — which is a different finding from *searched and
-not found*, and the difference matters to whoever picks the work up.
+**Spawn in batches of two or three.** Sub-agents share the parent's token budget
+against a per-minute account limit, and a burst of them exceeds it: a refused
+spawn is a step nobody ever searched. Launch a batch, merge its fragments, launch
+the next. Any step whose sub-agent never started is recorded in `unresolved` as
+*not attempted* — a different finding from *searched and not found*, and the
+difference matters to whoever picks the work up.
+
+**Tell each sub-agent not to read this skill.** They inherit the parent's tools
+and will otherwise each pull the reference files into context — the same several
+thousand tokens, once per sub-agent, for rules the brief already contains. That
+duplication is what pushes a fan-out over a per-minute limit. The brief is the
+sub-agent's whole instruction set; state the rules in it and say plainly that the
+skill directory is not to be read.
 
 Do not delegate the classification or the vocabulary binding. Those depend on the
 whole source and on judgments the parent has already made. A sub-agent fills
@@ -98,6 +106,9 @@ Include, in this order:
      a number about a different process
 6. **The output path**, exactly: `/tmp/env/<step_id>.json`.
 7. **The source-id prefix**, exactly: `<step_id>-S1`, `<step_id>-S2`, …
+8. **"Do not read the skill directory."** Said outright — the brief is complete
+   without it, and reading it multiplies the token cost of the fan-out by the
+   number of sub-agents.
 
 That last point is not cosmetic. Sub-agents work independently and will all
 choose `S2` for their second source; prefixing by step is what stops the merge
