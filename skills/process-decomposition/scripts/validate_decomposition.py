@@ -453,6 +453,23 @@ def main() -> int:
     print(f"\n{total} error(s), {report.warning_count} warning(s) across "
           f"{len(steps)} step(s), {len(data.get('streams') or [])} stream(s), "
           f"{len(specs)} spec(s).")
+
+    # The step list is printed from the file that was just checked, so a report
+    # cannot pair a stale pass with a newer set of steps. Quote this block rather
+    # than retyping it.
+    if steps:
+        not_stated_by_step = {s.get("step_id"): s.get("not_stated") or [] for s in specs}
+        print(f"\nsteps in {args.path.name}:")
+        for step in steps:
+            uri = step.get("capability_uri") or ""
+            concept = uri.rsplit("#", 1)[-1].rsplit("/", 1)[-1] if uri else "unmapped"
+            match = step.get("capability_match", "")
+            gaps = not_stated_by_step.get(step.get("step_id"))
+            envelope = "no envelope" if gaps and len(gaps) == len(QUANTITIES) else \
+                       f"{len(QUANTITIES) - len(gaps or [])}/{len(QUANTITIES)} quantities" \
+                       if gaps is not None else "NO SPEC"
+            print(f"  {str(step.get('step_id')):<6} {str(step.get('kind')):<14} "
+                  f"{concept:<18} {match:<8} {str(step.get('confidence')):<7} {envelope}")
     return 1 if total else 0
 
 

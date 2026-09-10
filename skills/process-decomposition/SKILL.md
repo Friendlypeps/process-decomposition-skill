@@ -107,7 +107,15 @@ one that was read.
 9. **Emit** JSON, and Turtle when asked. See `reference/output-schema.md`.
 10. **Validate** before reporting:
    `python scripts/validate_decomposition.py <file.json>`
-   Fix what it reports. Do not hand over output that fails validation.
+   Fix what it reports, then **run it again**. Every edit invalidates the last
+   result: a pass earned before a rewrite says nothing about the file you now
+   have, and repeating it is how an invented concept URI reaches a reader under
+   a clean bill of health.
+
+   The validator prints the step table from the file it just checked. **Quote
+   that block** as your report instead of retyping the steps — a list you typed
+   can drift from the file, the one it printed cannot. If your own count and its
+   count disagree, the file is not what you think it is.
 
 ## What not to do
 

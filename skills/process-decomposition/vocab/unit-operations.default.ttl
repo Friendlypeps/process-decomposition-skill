@@ -164,3 +164,7 @@ uo:Comminution a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:SizeCh
     skos:prefLabel "comminution"@en ; skos:altLabel "milling"@en .
 uo:Agglomeration a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:SizeChange ;
     skos:prefLabel "agglomeration"@en .
+
+uo:Dissolution a skos:Concept ; skos:inScheme uo:Scheme ; skos:broader uo:Mixing ;
+    skos:prefLabel "dissolution"@en ;
+    skos:definition "Bringing a solid into solution. A unit operation - the compound is unchanged - and the counterpart of crystallisation in a recrystallisation sequence."@en .
