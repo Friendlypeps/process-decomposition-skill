@@ -97,6 +97,35 @@ def cmd_fetch(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_save(args: argparse.Namespace) -> int:
+    """
+    Register text obtained some other way, so it gets offsets like any fetch.
+
+    Direct fetching fails for real reasons - a site that refuses datacenter
+    egress, a page that needs JavaScript, a login wall. Text recovered through a
+    browser or a search tool is still evidence; it just arrives without a
+    position. Save it here and `find` works on it exactly as it would have.
+    """
+    out_dir = Path(args.out)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path = out_dir / f"{args.id}.txt"
+    raw = sys.stdin.read() if args.text is None else args.text
+    text = to_text(raw) if args.html else raw.strip()
+    path.write_text(text, encoding="utf-8")
+    print(json.dumps({
+        "source_id": args.id,
+        "uri": args.uri,
+        "title": args.title,
+        "kind": args.kind,
+        "retrieved_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "chars": len(text),
+        "readable": True,
+        "path": str(path),
+        "note": f"retrieved via {args.via}",
+    }, indent=2))
+    return 0
+
+
 def cmd_find(args: argparse.Namespace) -> int:
     text = Path(args.source).read_text(encoding="utf-8")
     needle = args.phrase if args.regex else re.escape(args.phrase)
@@ -124,10 +153,13 @@ def cmd_window(args: argparse.Namespace) -> int:
     return 0
 
 
+# The degree sign is optional: sources write "155 C" and "120~160 C" as often as
+# "155 °C". Over-matching is fine here - this is a candidate list the caller
+# confirms by reading the sentence around each hit.
 QUANTITY_PATTERN = (
-    r"\d[\d.,]*\s*(?:~|--|-|–|to)?\s*[\d.,]*\s*"
-    r"(?:°\s*[CF]\b|deg\s*[CF]\b|\bK\b|\bbar\b|\bmbar\b|\bpsig?\b|\bkPa\b|\bMPa\b|"
-    r"\batm\b|\btorr\b|\bm3\b|\bL\b|\bkg/h\b|\bt/h\b)"
+    r"\d[\d.,]*\s*(?:~|--|-|–|—|to)?\s*[\d.,]*\s*"
+    r"(?:(?:°|º)?\s*(?:deg\.?\s*)?[CF]\b|\bK\b|\bbar\b|\bmbar\b|\bpsig?\b|\bkPa\b|\bMPa\b|"
+    r"\batm\b|\btorr\b|\bmmHg\b|\bm3\b|\bL\b|\bkg/s\b|\bkg/h\b|\bt/h\b)"
 )
 
 
@@ -154,6 +186,17 @@ def main() -> int:
     fetch.add_argument("--out", default="/tmp/src", help="directory for the saved text")
     fetch.add_argument("--kind", default="web", choices=["web", "pdf", "file", "figure", "patent"])
     fetch.set_defaults(func=cmd_fetch)
+
+    save = sub.add_parser("save", help="register text fetched by other means (stdin, or --text)")
+    save.add_argument("--id", required=True)
+    save.add_argument("--uri", required=True)
+    save.add_argument("--out", default="/tmp/src")
+    save.add_argument("--title", default="")
+    save.add_argument("--kind", default="web", choices=["web", "pdf", "file", "figure", "patent"])
+    save.add_argument("--via", default="browser", help="how it was retrieved, recorded as a note")
+    save.add_argument("--text", default=None, help="the text; omit to read stdin")
+    save.add_argument("--html", action="store_true", help="strip tags before saving")
+    save.set_defaults(func=cmd_save)
 
     find = sub.add_parser("find", help="locate a phrase and return its offset")
     find.add_argument("phrase")
